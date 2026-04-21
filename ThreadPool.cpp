@@ -1,7 +1,3 @@
-//
-// Created by ilya on 4/20/26.
-//
-
 #include "ThreadPool.h"
 
 #include <iostream>
@@ -34,13 +30,13 @@ ThreadPool::ThreadPool(int num_threads) {
 }
 
 
-void ThreadPool::add_task(std::function<void()> f) {
-    std::unique_lock<std::mutex> lock(m);
-    if (stop)  throw std::runtime_error("add_task on stopped pool");
-    tasks.emplace(std::move(f));
-    lock.unlock();
-    cv.notify_one();
-}
+// void ThreadPool::add_task(std::function<void()> f) {
+//     std::unique_lock<std::mutex> lock(m);
+//     if (stop)  throw std::runtime_error("add_task on stopped pool");
+//     tasks.emplace(std::move(f));
+//     lock.unlock();
+//     cv.notify_one();
+// }
 
 ThreadPool::~ThreadPool() {
     stop = true;
