@@ -16,10 +16,10 @@ int test_task(int id) {
 
 int main() {
 
-    ThreadPool pool(4);
+    ThreadPool pool(4, 8);
     std::vector<std::future<int>> results;
 
-    for (int i = 0; i < 10; ++i) {
+    for (int i = 0; i < 20; ++i) {
         results.push_back(pool.add_task(test_task, i));
     }
 

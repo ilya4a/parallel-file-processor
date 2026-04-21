@@ -9,7 +9,7 @@ void ThreadPool::thread_task() {
         std::function<void()> task;
         {
             std::unique_lock<std::mutex> lock(m);
-            cv.wait(lock, [this](){return !tasks.empty() || stop;});
+            worker_cv.wait(lock, [this](){return !tasks.empty() || stop;});
 
             if (stop && tasks.empty()) return;
 
@@ -34,10 +34,13 @@ void ThreadPool::thread_task() {
             wait_finished_cv.notify_all();
         }
 
+        queue_full_cv.notify_one();
+
     }
 }
 
-ThreadPool::ThreadPool(int num_threads) : start(std::chrono::steady_clock::now())   {
+ThreadPool::ThreadPool(int num_threads, size_t max_queue_size ) : start(std::chrono::steady_clock::now())   {
+    this->max_queue_size = max_queue_size;
     for (int i = 0; i < num_threads; i++) {
         threads.emplace_back(&ThreadPool::thread_task, this);
     }
@@ -52,7 +55,13 @@ void ThreadPool::wait_all() {
 
 ThreadPool::~ThreadPool() {
     stop = true;
-    cv.notify_all();
+
+    {
+        std::unique_lock<std::mutex> lock(m);
+        worker_cv.notify_all();
+        queue_full_cv.notify_all();
+    }
+
     for (auto& t : threads) t.join();
 
     auto end = std::chrono::steady_clock::now();

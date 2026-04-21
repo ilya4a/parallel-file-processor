@@ -2,6 +2,7 @@
 #define THREADPOOL_THREADPOOL_H
 #include <functional>
 #include <future>
+#include <iostream>
 #include <queue>
 #include <thread>
 
@@ -13,16 +14,20 @@ class ThreadPool {
     std::queue<std::function<void()>> tasks;
     std::mutex m;
 
-    std::condition_variable cv;
+    std::condition_variable worker_cv;
+    std::condition_variable queue_full_cv;
     std::atomic<bool> stop;
 
     std::atomic<int> active_tasks{0};
     std::condition_variable wait_finished_cv;
+    size_t max_queue_size;
 
     void thread_task();
 
+
 public:
-    ThreadPool(int num_threads);
+    // ThreadPool(int num_threads);
+    ThreadPool(int num_threads, size_t max_queue_size = std::numeric_limits<size_t>::max());
 
     void wait_all();
 
@@ -31,6 +36,7 @@ public:
 
     ~ThreadPool();
 };
+
 
 
 template<typename F, typename ...Args>
@@ -42,12 +48,23 @@ std::future<typename std::invoke_result_t<F, Args...> > ThreadPool::add_task(F&&
 
 
     std::unique_lock<std::mutex> lock(m);
+
+    bool is_out_of_queue = false;
+    if ( tasks.size() >= max_queue_size ) is_out_of_queue = true;
+
+    queue_full_cv.wait(lock, [this](){return tasks.size() < max_queue_size || stop;});
+
+    auto args_tuple = std::forward_as_tuple(std::forward<Args>(args)...);
+    if (is_out_of_queue) {
+        std::cout << "was waiting " << std::get<0>(args_tuple) << std::endl;
+    }
+
     if (stop)  throw std::runtime_error("add_task on stopped pool");
 
     tasks.emplace([p_task_ptr](){(*p_task_ptr)();});
 
     lock.unlock();
-    cv.notify_one();
+    worker_cv.notify_one();
 
     return p_task_ptr->get_future();
 }
