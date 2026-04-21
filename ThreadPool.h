@@ -7,7 +7,7 @@
 
 
 class ThreadPool {
-    std::chrono::time_point<std::chrono::system_clock> start;
+    std::chrono::time_point<std::chrono::steady_clock> start;
 
     std::vector<std::thread> threads;
     std::queue<std::function<void()>> tasks;
@@ -16,24 +16,27 @@ class ThreadPool {
     std::condition_variable cv;
     std::atomic<bool> stop;
 
+    std::atomic<int> active_tasks{0};
+    std::condition_variable wait_finished_cv;
+
     void thread_task();
 
 public:
     ThreadPool(int num_threads);
 
-    // void add_task(std::function<void()> f);
+    void wait_all();
 
     template<typename F, typename ...Args>
-    std::future<typename std::result_of<F(Args...)>::type> add_task(F&& f, Args&&... args);
+    std::future<typename std::invoke_result_t<F, Args...> > add_task(F&& f, Args&&... args);
 
     ~ThreadPool();
 };
 
 
 template<typename F, typename ...Args>
-std::future<typename std::result_of<F(Args...)>::type> ThreadPool::add_task(F&& f, Args&&... args) {
+std::future<typename std::invoke_result_t<F, Args...> > ThreadPool::add_task(F&& f, Args&&... args) {
 
-    auto p_task_ptr = std::make_shared< std::packaged_task<typename std::result_of<F(Args...)>::type()>>(
+    auto p_task_ptr = std::make_shared< std::packaged_task<typename std::invoke_result_t<F, Args...> ()>>(
         std::bind(std::forward<F>(f), std::forward<Args>(args)...)
         );
 

@@ -13,39 +13,51 @@ void ThreadPool::thread_task() {
 
             if (stop && tasks.empty()) return;
 
+            ++active_tasks;
             task = std::move(tasks.front());
             tasks.pop();
         }
-        task();
+
+        try {
+            task();
+        } catch (const std::exception& e) {
+            std::cerr << "task threw " << e.what() << std::endl;
+        } catch (...) {
+            std::cerr << "task threw unknown exception" << std::endl;
+        }
+
+        --active_tasks;
+
+        std::unique_lock<std::mutex> lock(m);
+        if (active_tasks == 0 && tasks.empty()) {
+            lock.unlock();
+            wait_finished_cv.notify_all();
+        }
 
     }
 }
 
-ThreadPool::ThreadPool(int num_threads) {
-    start = std::chrono::high_resolution_clock::now();
-
+ThreadPool::ThreadPool(int num_threads) : start(std::chrono::steady_clock::now())   {
     for (int i = 0; i < num_threads; i++) {
         threads.emplace_back(&ThreadPool::thread_task, this);
     }
 }
 
-
-// void ThreadPool::add_task(std::function<void()> f) {
-//     std::unique_lock<std::mutex> lock(m);
-//     if (stop)  throw std::runtime_error("add_task on stopped pool");
-//     tasks.emplace(std::move(f));
-//     lock.unlock();
-//     cv.notify_one();
-// }
+void ThreadPool::wait_all() {
+    std::unique_lock<std::mutex> lock(m);
+    wait_finished_cv.wait(lock, [this]() {
+        return tasks.empty() && active_tasks == 0;
+    });
+}
 
 ThreadPool::~ThreadPool() {
     stop = true;
     cv.notify_all();
     for (auto& t : threads) t.join();
 
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start).count();
-
-    std::cout << "total duration: " << duration << std::endl;
+    auto end = std::chrono::steady_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+    std::cout << "total duration: " << duration << " ms\n";
 }
 
 

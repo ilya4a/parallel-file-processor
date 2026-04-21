@@ -23,6 +23,8 @@ int main() {
         results.push_back(pool.add_task(test_task, i));
     }
 
+    pool.wait_all();
+
     for (auto& i: results) {
         std::cout << i.get() << std::endl;
     }
