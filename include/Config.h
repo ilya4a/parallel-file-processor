@@ -14,8 +14,9 @@ namespace fs = std::filesystem;
 struct Config {
     fs::path root_path;
     std::vector<std::string> extensions;
+    std::string query;
 
-    Config(fs::path path, std::vector<std::string> exts = std::vector<std::string>()) : root_path(path) {
+    Config(fs::path path, std::string query, std::vector<std::string> exts = std::vector<std::string>()) : root_path(path), query(query) {
         if (exts.size() == 0) {
             extensions = {".c", ".cpp", ".cc", ".cxx", ".h", ".hpp", ".hxx", ".inl",
             ".py", ".sh", ".bash", ".pl", ".rb", ".lua", ".js", ".ts",
@@ -25,6 +26,8 @@ struct Config {
             ".html", ".htm", ".css", ".scss", ".sass", ".less", ".svg",
             ".csv", ".tsv", ".sql", ".patch", ".diff"
             };
+        }else {
+            extensions = std::move(exts);
         }
     };
 

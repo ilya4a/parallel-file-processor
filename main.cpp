@@ -33,7 +33,7 @@ void run_pool() {
 
 int main() {
 
-    Config config("./CMakeFiles");
+    Config config("../test_dir", "зашумит");
     App app;
     app.run(config);
 

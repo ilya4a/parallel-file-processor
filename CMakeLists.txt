@@ -9,4 +9,7 @@ add_executable(ThreadPool main.cpp
         src/App.cpp
         include/App.h
         include/FileCollector.h
-        include/Config.h)
+        include/Config.h
+        FileProcessor.cpp
+        FileProcessor.h
+        include/results_structs.h)
