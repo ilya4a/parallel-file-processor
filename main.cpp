@@ -33,7 +33,7 @@ void run_pool() {
 
 int main() {
 
-    Config config("../test_dir", "зашумит");
+    Config config("../test_dir", "?");
     App app;
     app.run(config);
 
