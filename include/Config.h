@@ -13,7 +13,20 @@ namespace fs = std::filesystem;
 
 struct Config {
     fs::path root_path;
-    Config(fs::path path) : root_path(path){};
+    std::vector<std::string> extensions;
+
+    Config(fs::path path, std::vector<std::string> exts = std::vector<std::string>()) : root_path(path) {
+        if (exts.size() == 0) {
+            extensions = {".c", ".cpp", ".cc", ".cxx", ".h", ".hpp", ".hxx", ".inl",
+            ".py", ".sh", ".bash", ".pl", ".rb", ".lua", ".js", ".ts",
+            ".json", ".yaml", ".yml", ".toml", ".ini", ".cfg", ".conf", ".xml", ".properties", ".env",
+            ".txt", ".md", ".rst", ".tex", ".log",
+            ".cmake", ".mk", ".make",
+            ".html", ".htm", ".css", ".scss", ".sass", ".less", ".svg",
+            ".csv", ".tsv", ".sql", ".patch", ".diff"
+            };
+        }
+    };
 
 };
 

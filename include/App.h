@@ -13,7 +13,7 @@
 class App {
 public:
     void run(Config cnf) {
-        std::vector<fs::path> files = FileCollector::collectRecursively(cnf.root_path);
+        std::vector<fs::path> files = FileCollector::collectRecursively(cnf.root_path, cnf.extensions);
         for (auto &i: files) std::cout << i << std::endl;
     };
 };
