@@ -1,6 +1,8 @@
 #include <iostream>
 
-#include "ThreadPool.h"
+#include "include/App.h"
+#include "include/Config.h"
+#include "include/ThreadPool.h"
 
 std::mutex cout_m;
 
@@ -14,8 +16,7 @@ int test_task(int id) {
    return id*id;
 }
 
-int main() {
-
+void run_pool() {
     ThreadPool pool(4, 8);
     std::vector<std::future<int>> results;
 
@@ -28,6 +29,14 @@ int main() {
     for (auto& i: results) {
         std::cout << i.get() << std::endl;
     }
+}
+
+int main() {
+
+    Config config("./CMakeFiles");
+    App app;
+    app.run(config);
+
 
     return 0;
 }
