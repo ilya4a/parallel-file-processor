@@ -33,13 +33,12 @@ void run_pool() {
 
 int main() {
 
-    Config config("../test_dir", "t...");
-    config.replacement = "1234";
-    // config.case_sensitive = true;
+    Config config = Config("../test_dir", "И печальна и темна")
+    .set_sensitive(false)
+    .set_replacement("И печальна и темна");
 
     App app;
     app.run(config);
-
 
     return 0;
 }

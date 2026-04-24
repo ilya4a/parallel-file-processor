@@ -8,40 +8,69 @@
 #include <string>
 #include <vector>
 #include <filesystem>
-#include <cstddef>
 namespace fs = std::filesystem;
 
 struct Config {
-    fs::path root_path;
-    std::vector<std::string> extensions;
-    std::string query;
-    std::string replacement;
-    bool use_regex;
-    bool case_sensitive;
 
-    Config(fs::path path, std::string query,
-        std::string replacement = "",
-        bool regex = false,
-        bool sensitive = false,
-        std::vector<std::string> exts = std::vector<std::string>()) : root_path(path), query(query) {
-        if (exts.size() == 0) {
-            extensions = {".c", ".cpp", ".cc", ".cxx", ".h", ".hpp", ".hxx", ".inl",
-            ".py", ".sh", ".bash", ".pl", ".rb", ".lua", ".js", ".ts",
-            ".json", ".yaml", ".yml", ".toml", ".ini", ".cfg", ".conf", ".xml", ".properties", ".env",
-            ".txt", ".md", ".rst", ".tex", ".log",
-            ".cmake", ".mk", ".make",
-            ".html", ".htm", ".css", ".scss", ".sass", ".less", ".svg",
-            ".csv", ".tsv", ".sql", ".patch", ".diff"
-            };
-        }else {
-            extensions = std::move(exts);
-        }
+private:
+    fs::path root_path_;
+    std::vector<std::string> extensions_;
+    std::string query_;
+    std::string replacement_;
+    bool use_regex_;
+    bool case_sensitive_;
+    bool use_replacement_;
 
-        this->replacement = replacement;
+public:
 
-        use_regex = regex;
-        case_sensitive = sensitive;
+    Config& set_replacement(std::string replacement) {
+        this->replacement_ = std::move(replacement);
+        use_replacement_ = true;
+        return *this;
     };
+
+    Config& set_regex(bool regex) {
+        this->use_regex_ = regex;
+        return *this;
+    };
+
+
+    Config& set_sensitive(bool sensitive) {
+        case_sensitive_ = sensitive;
+        return *this;
+    };
+
+    Config& set_extensions(std::vector<std::string> const& exts) {
+        extensions_ = exts;
+        return *this;
+    };
+
+
+    Config(fs::path path, std::string query) : root_path_(path), query_(query) {
+
+        extensions_ = {".c", ".cpp", ".cc", ".cxx", ".h", ".hpp", ".hxx", ".inl",
+        ".py", ".sh", ".bash", ".pl", ".rb", ".lua", ".js", ".ts",
+        ".json", ".yaml", ".yml", ".toml", ".ini", ".cfg", ".conf", ".xml", ".properties", ".env",
+        ".txt", ".md", ".rst", ".tex", ".log",
+        ".cmake", ".mk", ".make",
+        ".html", ".htm", ".css", ".scss", ".sass", ".less", ".svg",
+        ".csv", ".tsv", ".sql", ".patch", ".diff"
+        };
+
+        use_regex_ = false;
+        case_sensitive_ = false;
+        replacement_ = "";
+        use_replacement_ = false;
+    }
+
+    const fs::path& root_path() const { return root_path_; }
+    const std::vector<std::string>& extensions() const { return extensions_; }
+    const std::string& query() const { return query_; }
+    const std::string& replacement() const { return replacement_; }
+    bool use_regex() const { return use_regex_; }
+    bool case_sensitive() const { return case_sensitive_; }
+    bool use_replacement() const { return use_replacement_; }
+
 
 };
 

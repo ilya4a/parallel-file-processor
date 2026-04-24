@@ -41,7 +41,7 @@ SearchResult FileProcessor::search()  {
 
     source = readFileToString(file_path);
 
-    SearchOptions options(config.query, config.use_regex, config.case_sensitive);
+    SearchOptions options(config.query(), config.use_regex(), config.case_sensitive());
 
     SearchResult search_result = TextSearcher::search(source, options);
 
@@ -56,9 +56,7 @@ FileResult FileProcessor::replace() {
 
     fs::path temp_file_name = create_temp_file();
 
-    ReplaceOptions replace_options(config.replacement, temp_file_name, source, file_result.search_result);
-
-    // std::cout << "config.replacement: " << config.replacement << std::endl;
+    ReplaceOptions replace_options(config.replacement(), temp_file_name, source, file_result.search_result);
 
     try {
         file_result.replace_result = TextReplacer::replace(replace_options);

@@ -6,11 +6,9 @@
 #define THREADPOOL_FILEPROCECCOR_H
 #include <filesystem>
 #include <fstream>
-#include <iostream>
 #include <utility>
 #include "Config.h"
 #include "results_structs.h"
-
 
 
 class FileProcessor {

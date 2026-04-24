@@ -14,7 +14,7 @@
 class App {
 public:
     void run(Config conf) {
-        std::vector<fs::path> files = FileCollector::collectRecursively(conf.root_path, conf.extensions);
+        std::vector<fs::path> files = FileCollector::collectRecursively(conf.root_path(), conf.extensions());
 
         std::cout << "found: " << std::endl;
 
