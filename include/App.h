@@ -8,26 +8,28 @@
 
 #include "Config.h"
 #include "FileCollector.h"
-#include "../FileProcessor.h"
+#include "FileProcessor.h"
 
 
 class App {
 public:
     void run(Config conf) {
         std::vector<fs::path> files = FileCollector::collectRecursively(conf.root_path, conf.extensions);
-        // for (auto &i: files) std::cout << i << std::endl;
 
+        std::cout << "found: " << std::endl;
 
         for (auto const & path: files) {
-            FileProcessor fp(path, conf);
+            FileProcessor file_processor(path, conf);
+
             std::cout << "path: " << path << std::endl;
-            for (auto& i: fp.get_file_result().search_result.matches) {
-                std::cout << "line: " << i.line << " col: " << i.column << std::endl;
+            for (auto& i: file_processor.replace().search_result.matches) {
+                std::cout << "line: " << i.line << " col: " << i.column_bytes << std::endl;
             }
+
+            std::cout << "replaces:  " << file_processor.replace().replace_result.num_replacements << std::endl;
+
             std::cout << std::endl;
         }
-
-
 
     };
 };

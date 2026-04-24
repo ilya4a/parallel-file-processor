@@ -15,10 +15,12 @@ struct Config {
     fs::path root_path;
     std::vector<std::string> extensions;
     std::string query;
+    std::string replacement;
     bool use_regex;
     bool case_sensitive;
 
     Config(fs::path path, std::string query,
+        std::string replacement = "",
         bool regex = false,
         bool sensitive = false,
         std::vector<std::string> exts = std::vector<std::string>()) : root_path(path), query(query) {
@@ -34,6 +36,8 @@ struct Config {
         }else {
             extensions = std::move(exts);
         }
+
+        this->replacement = replacement;
 
         use_regex = regex;
         case_sensitive = sensitive;

@@ -25,19 +25,12 @@ public:
     //     return count;
     // }
 
-    static size_t count_utf8_symbols(std::string_view sv, size_t byte_pos) {
-        return byte_pos;
-    }
-
-    static std::pair<size_t, size_t> find_line_and_column (std::vector<size_t> const& line_starts, std::string_view const& content, size_t pos)  {
+    static std::pair<size_t, size_t> find_line_and_column (std::vector<size_t> const& line_starts, size_t pos)  {
         auto it = std::upper_bound(line_starts.begin(), line_starts.end(), pos);
         size_t line = std::distance(line_starts.begin(), it) - 1;
 
         size_t line_start = *(it - 1);
-        std::string_view line_content = content.substr(line_start, pos - line_start);
-        size_t column = count_utf8_symbols(line_content, line_content.size());
-
-        return {line, column};
+        return {line, pos - line_start};
     };
 
     static SearchResult search(std::string_view content, const SearchOptions& options) {
@@ -72,8 +65,11 @@ public:
 
             if (found_pos == std::string_view::npos) break;
 
-            std::pair position = find_line_and_column(line_starts, content, found_pos);
-            result.matches.emplace_back(position.first, position.second);
+            std::pair position = find_line_and_column(line_starts, found_pos);
+
+            result.matches.emplace_back(position.first, position.second, found_pos);
+
+            result.matches.back().length = options.find.size(); //regex fix
 
             search_pos = found_pos + 1;
         }

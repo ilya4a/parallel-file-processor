@@ -33,7 +33,8 @@ void run_pool() {
 
 int main() {
 
-    Config config("../test_dir", "uuu");
+    Config config("../test_dir", "t...");
+    config.replacement = "1234";
     // config.case_sensitive = true;
 
     App app;

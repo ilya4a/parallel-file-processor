@@ -10,7 +10,10 @@ add_executable(ThreadPool main.cpp
         include/App.h
         include/FileCollector.h
         include/Config.h
-        FileProcessor.cpp
-        FileProcessor.h
+        src/FileProcessor.cpp
+        include/FileProcessor.h
         include/results_structs.h
-        include/TextSearcher.h)
+        include/TextSearcher.h
+        include/TextReplacer.cpp
+        include/TextReplacer.h
+)
