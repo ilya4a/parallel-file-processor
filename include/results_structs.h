@@ -21,7 +21,7 @@ struct SearchOptions {
     std::string find;
     bool use_regex;
     bool case_sensitive;
-    SearchOptions(std::string str, bool regex = false, bool sensitive = false) : find(std::move(str)),
+    SearchOptions(std::string str, bool regex, bool sensitive) : find(std::move(str)),
         use_regex(regex),
         case_sensitive(sensitive){};
 };

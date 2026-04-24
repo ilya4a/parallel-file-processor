@@ -15,8 +15,13 @@ struct Config {
     fs::path root_path;
     std::vector<std::string> extensions;
     std::string query;
+    bool use_regex;
+    bool case_sensitive;
 
-    Config(fs::path path, std::string query, std::vector<std::string> exts = std::vector<std::string>()) : root_path(path), query(query) {
+    Config(fs::path path, std::string query,
+        bool regex = false,
+        bool sensitive = false,
+        std::vector<std::string> exts = std::vector<std::string>()) : root_path(path), query(query) {
         if (exts.size() == 0) {
             extensions = {".c", ".cpp", ".cc", ".cxx", ".h", ".hpp", ".hxx", ".inl",
             ".py", ".sh", ".bash", ".pl", ".rb", ".lua", ".js", ".ts",
@@ -29,6 +34,9 @@ struct Config {
         }else {
             extensions = std::move(exts);
         }
+
+        use_regex = regex;
+        case_sensitive = sensitive;
     };
 
 };

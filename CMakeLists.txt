@@ -12,4 +12,5 @@ add_executable(ThreadPool main.cpp
         include/Config.h
         FileProcessor.cpp
         FileProcessor.h
-        include/results_structs.h)
+        include/results_structs.h
+        include/TextSearcher.h)
