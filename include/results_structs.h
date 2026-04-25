@@ -38,26 +38,76 @@ struct SearchResult {
 };
 
 struct ReplaceOptions {
-    // SearchOptions search_options;
-    std::string replacement;
-    fs::path tmp_file_path;
-    std::string_view content;
-    SearchResult const& search_result;
-    size_t replacement_size;
 
-    ReplaceOptions(std::string replacement,
-    fs::path tmp_file_path,
+    const std::string& replacement() const { return replacement_; }
+    const fs::path& tmp_file_path() const { return tmp_file_path_; }
+    std::string_view content() const { return content_; }
+    const SearchResult& search_result() const { return search_result_; }
+    size_t replacement_size() const { return replacement_size_; }
+
+    class Builder {
+        std::string replacement_;
+        fs::path tmp_file_path_;
+        std::string_view content_;
+        SearchResult const& search_result_;
+        size_t replacement_size_;
+
+        bool is_build;
+
+    public:
+        Builder(std::string_view content, SearchResult const& search_result) :
+        content_(content), search_result_(search_result), replacement_size_{0}
+        {}
+
+        Builder& set_replacement(std::string replacement) {
+            replacement_ = std::move(replacement);
+            replacement_size_ = replacement_.size();
+            return *this;
+        }
+
+        Builder& set_tmp_file_path(fs::path tmp_file_path) {
+            tmp_file_path_ = std::move(tmp_file_path);
+            return *this;
+        }
+
+        ReplaceOptions build() {
+            if (tmp_file_path_.empty()) throw std::runtime_error("ReplaceOptions: Builder: tmp_file_path is empty");
+            if (is_build) throw std::runtime_error("ReplaceOptions: repeated call of build()");
+
+            ReplaceOptions replace_options ( std::move(replacement_),
+                std::move(tmp_file_path_),
+                content_,
+                search_result_,
+                replacement_size_);
+
+            is_build = true;
+            return replace_options;
+        }
+    };
+    
+
+private:
+    std::string replacement_;
+    fs::path tmp_file_path_;
+    std::string_view content_;
+    SearchResult const& search_result_;
+    size_t replacement_size_;
+
+    ReplaceOptions(std::string&& replacement,
+    fs::path&& tmp_file_path,
     std::string_view content,
-    SearchResult const& search_result)
-    : replacement(std::move(replacement)),
-    tmp_file_path(std::move(tmp_file_path)),
-    content(content),
-    search_result(search_result) {
-        replacement_size = this->replacement.size();
-        // std::cout << "replacement_size = replacement.size(): " << replacement_size << std::endl;
-        // std::cout << "replacement " << replacement << std::endl;
-    }
+    SearchResult const& search_result,
+    size_t replacement_size)
+
+    : replacement_(std::move(replacement)),
+    tmp_file_path_(std::move(tmp_file_path)),
+    content_(content),
+    search_result_(search_result),
+    replacement_size_(replacement_size){}
 };
+
+
+
 
 struct ReplaceResult {
     size_t num_replacements;
