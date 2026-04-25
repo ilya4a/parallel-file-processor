@@ -33,9 +33,13 @@ void run_pool() {
 
 int main() {
 
-    Config config = Config("../test_dir", "И печальна и темна")
+    Config config = Config::Builder()
+    .set_root_path("../test_dir")
+    .set_query("7777777")
+    .set_replacement("")
     .set_sensitive(false)
-    .set_replacement("И печальна и темна");
+    .build();
+
 
     App app;
     app.run(config);
