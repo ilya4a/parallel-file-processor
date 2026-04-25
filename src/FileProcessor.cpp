@@ -76,6 +76,8 @@ ReplaceResult FileProcessor::replace(SearchResult const& search_result) {
 
 FileResult FileProcessor::process_file() {
 
+    auto start = std::chrono::steady_clock::now();
+
     SearchResult search_result = search();
     FileResult file_result;
 
@@ -85,6 +87,9 @@ FileResult FileProcessor::process_file() {
     }
 
     file_result.search_result = std::move(search_result);
+    auto end = std::chrono::steady_clock::now();
+
+    file_result.processing_time_us = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
 
     return file_result;
 }

@@ -25,6 +25,8 @@ public:
             }
 
             std::cout << "replaces:  " << file_result.replace_result.num_replacements << std::endl;
+            std::cout << "time:  " << file_result.processing_time_us << " ms" << std::endl;
+
 
             std::cout << std::endl;
         }

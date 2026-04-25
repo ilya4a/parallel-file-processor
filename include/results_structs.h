@@ -44,6 +44,10 @@ struct FileResult {
     ReplaceResult replace_result;
     std::string error_message;
 
+    size_t file_size_bytes;
+    size_t word_count;
+    size_t processing_time_us;
+
     FileResult() : replace_result(-1){}
 };
 

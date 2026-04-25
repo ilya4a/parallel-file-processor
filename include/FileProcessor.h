@@ -20,12 +20,10 @@ class FileProcessor {
     ReplaceResult replace(SearchResult const& search_result);
 
 public:
-
     FileProcessor(fs::path path, Config conf) :config(std::move(conf)), file_path(std::move(path)){}
     FileResult process_file();
 
 };
-
 
 
 #endif //THREADPOOL_FILEPROCECCOR_H
