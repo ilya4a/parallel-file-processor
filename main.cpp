@@ -32,14 +32,12 @@ void run_pool() {
 }
 
 int main() {
-
     Config config = Config::Builder()
     .set_root_path("../test_dir")
-    .set_query("7777777")
-    .set_replacement("")
+    .set_query("12345")
+    .set_replacement("s...")
     .set_sensitive(false)
     .build();
-
 
     App app;
     app.run(config);

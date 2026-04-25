@@ -22,7 +22,7 @@ public:
             FileProcessor file_processor(path, conf);
 
             std::cout << "path: " << path << std::endl;
-            for (auto& i: file_processor.replace().search_result.matches) {
+            for (auto& i: file_processor.search().matches) {
                 std::cout << "line: " << i.line << " col: " << i.column_bytes << std::endl;
             }
 
