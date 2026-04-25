@@ -1,7 +1,3 @@
-//
-// Created by ilya on 4/22/26.
-//
-
 #ifndef THREADPOOL_CONFIG_H
 #define THREADPOOL_CONFIG_H
 

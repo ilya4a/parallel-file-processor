@@ -1,14 +1,9 @@
-//
-// Created by ilya on 4/25/26.
-//
 
 #ifndef THREADPOOL_REPLACEOPTIONS_H
 #define THREADPOOL_REPLACEOPTIONS_H
 
 #include <filesystem>
 #include <utility>
-#include <vector>
-
 #include "results_structs.h"
 
 namespace fs = std::filesystem;
@@ -32,8 +27,9 @@ struct ReplaceOptions {
 
     public:
         Builder(std::string_view content, SearchResult const& search_result) :
-        content_(content), search_result_(search_result), replacement_size_{0}, is_build(false)
-        {}
+        content_(content), search_result_(search_result), replacement_size_{0}, is_build(false) {
+            if (content_.empty()) throw std::runtime_error("Builder: content is empty");
+        }
 
         Builder& set_replacement(std::string replacement) {
             replacement_ = std::move(replacement);
@@ -43,6 +39,7 @@ struct ReplaceOptions {
 
         Builder& set_tmp_file_path(fs::path tmp_file_path) {
             tmp_file_path_ = std::move(tmp_file_path);
+            if (tmp_file_path_.empty()) throw std::runtime_error("tmp_file_path is empty");
             return *this;
         }
 

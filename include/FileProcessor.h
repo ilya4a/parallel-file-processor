@@ -1,6 +1,3 @@
-//
-// Created by ilya on 4/22/26.
-//
 
 #ifndef THREADPOOL_FILEPROCECCOR_H
 #define THREADPOOL_FILEPROCECCOR_H
@@ -14,20 +11,19 @@
 class FileProcessor {
     Config config;
     fs::path file_path;
-    FileResult file_result;
     std::string source;
-    bool was_search;
 
     std::string readFileToString(const std::filesystem::path& path);
     std::string create_temp_file();
 
+    SearchResult search();
+    ReplaceResult replace(SearchResult const& search_result);
+
 public:
 
-    FileProcessor(fs::path path, Config conf) :config(std::move(conf)), file_path(std::move(path)), was_search(false) {}
+    FileProcessor(fs::path path, Config conf) :config(std::move(conf)), file_path(std::move(path)){}
+    FileResult process_file();
 
-    SearchResult search();
-
-    FileResult replace();
 };
 
 

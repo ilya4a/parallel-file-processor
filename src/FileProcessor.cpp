@@ -1,12 +1,9 @@
-//
-// Created by ilya on 4/22/26.
-//
+
 
 #include "../include/FileProcessor.h"
 #include <unistd.h>
 #include "../include/TextSearcher.h"
 #include "../include/TextReplacer.h"
-
 
 std::string FileProcessor::readFileToString(const std::filesystem::path &path){
     std::ifstream file(path, std::ios::binary);
@@ -45,38 +42,49 @@ SearchResult FileProcessor::search()  {
 
     SearchResult search_result = TextSearcher::search(source, options);
 
-    file_result.search_result = search_result;
-    was_search = true;
-
     return search_result;
 }
 
-FileResult FileProcessor::replace() {
-    if (!was_search){ search(); was_search = true;}
+ReplaceResult FileProcessor::replace(SearchResult const& search_result) {
 
     fs::path temp_file_name = create_temp_file();
 
-    // ReplaceOptions replace_options(config.replacement(), temp_file_name, source, file_result.search_result);
-
-    ReplaceOptions replace_options = ReplaceOptions::Builder(source, file_result.search_result)
+    ReplaceOptions replace_options = ReplaceOptions::Builder(source, search_result)
     .set_replacement(config.replacement())
     .set_tmp_file_path(temp_file_name)
     .build();
 
+    ReplaceResult replace_result{0};
 
     try {
-        file_result.replace_result = TextReplacer::replace(replace_options);
+        replace_result = TextReplacer::replace(replace_options);
     }catch (std::exception &e) {
-        file_result.error_message = e.what();
+        replace_result.error_massage = "Replace error in file" + file_path.string() + " : " + e.what();
+
         if (!replace_options.tmp_file_path().empty() && fs::exists(replace_options.tmp_file_path())) {
             std::error_code ec;
             fs::remove(replace_options.tmp_file_path(), ec);
         }
         std::cerr << "Replace error in " << file_path << ": " << e.what() << std::endl;
-        return file_result;
+        return replace_result;
     }
 
     std::filesystem::rename(temp_file_name, file_path);
+
+    return replace_result;
+}
+
+FileResult FileProcessor::process_file() {
+
+    SearchResult search_result = search();
+    FileResult file_result;
+
+    if (config.use_replacement()) {
+        ReplaceResult replace_result = replace(search_result);
+        file_result.replace_result = std::move(replace_result);
+    }
+
+    file_result.search_result = std::move(search_result);
 
     return file_result;
 }

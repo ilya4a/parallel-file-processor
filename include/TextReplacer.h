@@ -1,6 +1,4 @@
-//
-// Created by ilya on 4/24/26.
-//
+
 
 #ifndef THREADPOOL_TEXTREPLACER_H
 #define THREADPOOL_TEXTREPLACER_H

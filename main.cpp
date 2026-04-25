@@ -34,8 +34,8 @@ void run_pool() {
 int main() {
     Config config = Config::Builder()
     .set_root_path("../test_dir")
-    .set_query("12345")
-    .set_replacement("s...")
+    .set_query("s...")
+    .set_replacement("0000000")
     .set_sensitive(false)
     .build();
 

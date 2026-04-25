@@ -1,6 +1,3 @@
-//
-// Created by ilya on 4/22/26.
-//
 
 #ifndef THREADPOOL_RESULTS_STRUCTS_H
 #define THREADPOOL_RESULTS_STRUCTS_H
@@ -11,7 +8,6 @@
 
 namespace fs = std::filesystem;
 
-
 struct Match {
         size_t line;
         size_t column_bytes;
@@ -21,7 +17,6 @@ struct Match {
         Match(size_t line, size_t column_bytes,  size_t byte_pos) : line(line), column_bytes(column_bytes), byte_pos(byte_pos) {
             length = -1;
         };
-
     };
 
 struct SearchOptions {
@@ -38,10 +33,10 @@ struct SearchResult {
 };
 
 
-
 struct ReplaceResult {
     size_t num_replacements;
-    ReplaceResult(size_t num) : num_replacements(num){};
+    std::string error_massage;
+    ReplaceResult(size_t num = 0) : num_replacements(num){};
 };
 
 struct FileResult {
