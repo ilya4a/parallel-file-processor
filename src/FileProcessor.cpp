@@ -47,24 +47,28 @@ SearchResult FileProcessor::search()  {
 
 ReplaceResult FileProcessor::replace(SearchResult const& search_result) {
 
-    fs::path temp_file_name = create_temp_file();
-
-    ReplaceOptions replace_options = ReplaceOptions::Builder(source, search_result)
-    .set_replacement(config.replacement())
-    .set_tmp_file_path(temp_file_name)
-    .build();
-
     ReplaceResult replace_result{0};
+    fs::path temp_file_name;
 
     try {
+
+        temp_file_name =create_temp_file();
+
+        ReplaceOptions replace_options = ReplaceOptions::Builder(source, search_result)
+        .set_replacement(config.replacement())
+        .set_tmp_file_path(temp_file_name)
+        .build();
+
         replace_result = TextReplacer::replace(replace_options);
+
     }catch (std::exception &e) {
         replace_result.error_massage = "Replace error in file" + file_path.string() + " : " + e.what();
 
-        if (!replace_options.tmp_file_path().empty() && fs::exists(replace_options.tmp_file_path())) {
+        if (!temp_file_name.empty() && fs::exists(temp_file_name)) {
             std::error_code ec;
-            fs::remove(replace_options.tmp_file_path(), ec);
+            fs::remove(temp_file_name, ec);
         }
+
         std::cerr << "Replace error in " << file_path << ": " << e.what() << std::endl;
         return replace_result;
     }

@@ -33,9 +33,9 @@ void run_pool() {
 
 int main() {
     Config config = Config::Builder()
-    .set_root_path("../")
-    .set_query("std::cout")
-    // .set_replacement("s...")
+    .set_root_path("../test_dir")
+    .set_query("234567891234567891234567")
+    .set_replacement("777777777777777777")
     .set_sensitive(false)
     .build();
 
