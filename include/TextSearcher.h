@@ -10,18 +10,6 @@
 
 class TextSearcher {
 public:
-    // static size_t count_utf8_symbols(std::string_view sv, size_t byte_pos) {
-    //     size_t count = 0;
-    //     for (size_t i = 0; i < byte_pos && i < sv.size(); ) {
-    //         unsigned char c = sv[i];
-    //         if (c < 0x80) i += 1;
-    //         else if (c < 0xE0) i += 2;
-    //         else if (c < 0xF0) i += 3;
-    //         else i += 4;
-    //         ++count;
-    //     }
-    //     return count;
-    // }
 
     static std::pair<size_t, size_t> find_line_and_column (std::vector<size_t> const& line_starts, size_t pos)  {
         auto it = std::upper_bound(line_starts.begin(), line_starts.end(), pos);
@@ -38,11 +26,31 @@ public:
         if (pattern.empty()) return result;
 
         std::vector<size_t> line_starts = {0};
+
+        size_t word_count = 0;
+        bool in_word = false;
+
         for (size_t i = 0; i < content.size(); ++i) {
+
+            auto c = static_cast<unsigned char>(content[i]);
+
+            if (std::isspace(c)) {
+                in_word = false;
+            } else {
+                if (!in_word) {
+                    ++word_count;
+                    in_word = true;
+                }
+            }
+
             if (content[i] == '\n') {
                 line_starts.push_back(i + 1);
             }
         }
+
+        result.lines = line_starts.size();
+        result.total_bytes = content.size();
+        result.total_words = word_count;
 
         size_t search_pos = 0;
         while (true) {

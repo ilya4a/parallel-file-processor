@@ -30,6 +30,10 @@ struct SearchOptions {
 
 struct SearchResult {
     std::vector<Match> matches;
+    size_t total_words = 0;
+    size_t total_bytes = 0;
+    size_t lines = 0;
+
 };
 
 
