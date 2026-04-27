@@ -39,7 +39,8 @@ void ThreadPool::thread_task() {
     }
 }
 
-ThreadPool::ThreadPool(int num_threads, size_t max_queue_size ) : start(std::chrono::steady_clock::now())   {
+ThreadPool::ThreadPool(int num_threads, size_t max_queue_size ) {
+
     this->max_queue_size = max_queue_size;
     for (int i = 0; i < num_threads; i++) {
         threads.emplace_back(&ThreadPool::thread_task, this);
@@ -64,9 +65,6 @@ ThreadPool::~ThreadPool() {
 
     for (auto& t : threads) t.join();
 
-    auto end = std::chrono::steady_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-    std::cout << "total duration: " << duration << " ms\n";
 }
 
 

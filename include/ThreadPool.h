@@ -8,7 +8,6 @@
 
 
 class ThreadPool {
-    std::chrono::time_point<std::chrono::steady_clock> start;
 
     std::vector<std::thread> threads;
     std::queue<std::function<void()>> tasks;
@@ -27,7 +26,7 @@ class ThreadPool {
 
 public:
     // ThreadPool(int num_threads);
-    ThreadPool(int num_threads, size_t max_queue_size = std::numeric_limits<size_t>::max());
+    ThreadPool(int num_threads = std::thread::hardware_concurrency(), size_t max_queue_size = std::numeric_limits<size_t>::max());
 
     void wait_all();
 
@@ -54,10 +53,10 @@ std::future<typename std::invoke_result_t<F, Args...> > ThreadPool::add_task(F&&
 
     queue_full_cv.wait(lock, [this](){return tasks.size() < max_queue_size || stop;});
 
-    auto args_tuple = std::forward_as_tuple(std::forward<Args>(args)...);
-    if (is_out_of_queue) {
-        std::cout << "was waiting " << std::get<0>(args_tuple) << std::endl;
-    }
+    // auto args_tuple = std::forward_as_tuple(std::forward<Args>(args)...);
+    // if (is_out_of_queue) {
+    //     std::cout << "was waiting " << std::get<0>(args_tuple) << std::endl;
+    // }
 
     if (stop)  throw std::runtime_error("add_task on stopped pool");
 

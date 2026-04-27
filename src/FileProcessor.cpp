@@ -52,7 +52,7 @@ ReplaceResult FileProcessor::replace(SearchResult const& search_result) {
 
     try {
 
-        temp_file_name =create_temp_file();
+        temp_file_name = create_temp_file();
 
         ReplaceOptions replace_options = ReplaceOptions::Builder(source, search_result)
         .set_replacement(config.replacement())
@@ -79,20 +79,26 @@ ReplaceResult FileProcessor::replace(SearchResult const& search_result) {
 }
 
 FileResult FileProcessor::process_file() {
-
+    FileResult file_result;
+    file_result.file_path = file_path;
     auto start = std::chrono::steady_clock::now();
 
-    SearchResult search_result = search();
-    FileResult file_result;
+    try {
 
-    if (config.use_replacement()) {
-        ReplaceResult replace_result = replace(search_result);
-        file_result.replace_result = std::move(replace_result);
+        SearchResult search_result = search();
+
+        if (config.use_replacement()) {
+            ReplaceResult replace_result = replace(search_result);
+            file_result.replace_result = std::move(replace_result);
+        }
+
+        file_result.search_result = std::move(search_result);
+
+    }catch (std::exception &e) {
+        file_result.error_message = e.what();
     }
 
-    file_result.search_result = std::move(search_result);
     auto end = std::chrono::steady_clock::now();
-
     file_result.processing_time_us = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
 
     return file_result;
