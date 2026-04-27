@@ -9,8 +9,10 @@
 
 class App {
 public:
-    void run(Config conf) {
-        std::vector<fs::path> files = FileCollector::collectRecursively(conf.root_path(), conf.extensions());
+
+    void handle_dir(Config const& conf,  fs::path const& path) {
+
+        std::vector<fs::path> files = FileCollector::collectRecursively(path, conf.extensions());
 
         for (auto const & path: files) {
             FileProcessor file_processor(path, conf);
@@ -35,8 +37,15 @@ public:
             }catch (std::exception &e ) {
                 std::cerr << "exception " << e.what() << " in file " << path.string() << std::endl;
             }
+            std::cout << std::endl;
+        }
+    }
 
 
+    void run(Config conf) {
+        for (auto& i : conf.root_paths() ) {
+            std::cout << "Dir: " << i.string() << std::endl;
+            handle_dir(conf, i);
             std::cout << std::endl;
         }
     };

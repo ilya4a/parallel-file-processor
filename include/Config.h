@@ -9,7 +9,7 @@ namespace fs = std::filesystem;
 
 struct Config {
 
-    const fs::path& root_path() const { return root_path_; }
+    const std::vector<fs::path>& root_paths() const { return root_paths_; }
     const std::vector<std::string>& extensions() const { return extensions_; }
     const std::string& query() const { return query_; }
     const std::string& replacement() const { return replacement_; }
@@ -19,7 +19,7 @@ struct Config {
 
 
 private:
-    fs::path root_path_;
+    std::vector<fs::path> root_paths_;
     std::vector<std::string> extensions_;
     std::string query_;
     std::string replacement_;
@@ -30,7 +30,7 @@ private:
 public:
 
     class Builder {
-        fs::path root_path_;
+        std::vector<fs::path> root_paths_;
         std::vector<std::string> extensions_;
         std::string query_;
         std::string replacement_;
@@ -59,8 +59,13 @@ public:
             is_build = false;
         }
 
-        Builder& set_root_path(fs::path path) {
-            root_path_ = std::move(path);
+
+        Builder& set_root_path(const std::string& paths_str) {
+            std::istringstream iss(paths_str);
+            std::string token;
+            while (iss >> token) {
+                root_paths_.emplace_back(std::move(token));
+            }
             return *this;
         }
 
@@ -92,11 +97,11 @@ public:
 
         Config build() {
 
-            if (root_path_.empty() || query_.empty()) throw std::runtime_error("Config: incorrect call of builder");
+            if (root_paths_.empty() || query_.empty()) throw std::runtime_error("Config: incorrect call of builder");
 
             if (is_build) throw std::runtime_error("Config: repeated call of build");
 
-            Config config(std::move(root_path_),
+            Config config(std::move(root_paths_),
                 std::move(extensions_),
                 std::move(query_),
                 std::move(replacement_),
@@ -112,7 +117,7 @@ public:
 
 private:
     Config(
-    fs::path&& root_path,
+    std::vector<fs::path>&& root_path,
     std::vector<std::string>&& extensions,
     std::string&& query,
     std::string&& replacement,
@@ -120,7 +125,7 @@ private:
     bool case_sensitive,
     bool use_replacement) :
 
-    root_path_(std::move(root_path)),
+    root_paths_(std::move(root_path)),
     extensions_(std::move(extensions)),
     query_(std::move(query)),
     replacement_(std::move(replacement)),

@@ -27,9 +27,7 @@ struct ReplaceOptions {
 
     public:
         Builder(std::string_view content, SearchResult const& search_result) :
-        content_(content), search_result_(search_result), replacement_size_{0}, is_build(false) {
-            if (content.empty()) throw std::runtime_error("Builder(std::string_view content, SearchResult const& search_result) :");
-        }
+        content_(content), search_result_(search_result), replacement_size_{0}, is_build(false) {}
 
         Builder& set_replacement(std::string replacement) {
             replacement_ = std::move(replacement);

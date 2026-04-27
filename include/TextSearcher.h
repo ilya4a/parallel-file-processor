@@ -9,8 +9,8 @@
 
 
 class TextSearcher {
-public:
 
+public:
     static std::pair<size_t, size_t> find_line_and_column (std::vector<size_t> const& line_starts, size_t pos)  {
         auto it = std::upper_bound(line_starts.begin(), line_starts.end(), pos);
         size_t line = std::distance(line_starts.begin(), it) - 1;
@@ -77,7 +77,7 @@ public:
 
             result.matches.back().length = options.find.size(); //regex fix
 
-            search_pos = found_pos + 1;
+            search_pos = found_pos + pattern.size();
         }
         return result;
     }
