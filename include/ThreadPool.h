@@ -26,7 +26,7 @@ class ThreadPool {
 
 public:
     // ThreadPool(int num_threads);
-    ThreadPool(int num_threads = std::thread::hardware_concurrency(), size_t max_queue_size = std::numeric_limits<size_t>::max());
+    ThreadPool(size_t num_threads, size_t max_queue_size = std::numeric_limits<size_t>::max());
 
     void wait_all();
 

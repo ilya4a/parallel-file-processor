@@ -17,6 +17,9 @@ struct Config {
     bool case_sensitive() const { return case_sensitive_; }
     bool use_replacement() const { return use_replacement_; }
 
+    size_t thread_count() const { return thread_count_; }
+    size_t detail_level() const { return detail_level_; }
+
 
 private:
     std::vector<fs::path> root_paths_;
@@ -26,6 +29,8 @@ private:
     bool use_regex_;
     bool case_sensitive_;
     bool use_replacement_;
+    size_t thread_count_;
+    size_t detail_level_;
 
 public:
 
@@ -37,6 +42,9 @@ public:
         bool use_regex_;
         bool case_sensitive_;
         bool use_replacement_;
+
+        size_t thread_count_;
+        size_t detail_level_;
 
         bool is_build;
 
@@ -57,8 +65,20 @@ public:
             use_replacement_ = false;
 
             is_build = false;
+
+            thread_count_ = 0;
+            detail_level_ = 1;
         }
 
+        Builder& set_detail_level(size_t n) {
+            detail_level_ = n;
+            return *this;
+        }
+
+        Builder& set_thread_count(size_t n) {
+            thread_count_ = n;
+            return *this;
+        }
 
         Builder& set_root_path(std::vector<std::string>&& dirs) {
 
@@ -106,7 +126,9 @@ public:
                 std::move(replacement_),
                 use_regex_,
                 case_sensitive_,
-                use_replacement_);
+                use_replacement_,
+                thread_count_,
+                detail_level_);
 
             is_build = true;
             return config;
@@ -122,7 +144,10 @@ private:
     std::string&& replacement,
     bool use_regex,
     bool case_sensitive,
-    bool use_replacement) :
+    bool use_replacement,
+    size_t thread_count,
+    size_t detail_level
+    ) :
 
     root_paths_(std::move(root_path)),
     extensions_(std::move(extensions)),
@@ -130,7 +155,9 @@ private:
     replacement_(std::move(replacement)),
     use_regex_(use_regex),
     case_sensitive_(case_sensitive),
-    use_replacement_(use_replacement) {
+    use_replacement_(use_replacement),
+    thread_count_(thread_count),
+    detail_level_(detail_level){
     }
 };
 

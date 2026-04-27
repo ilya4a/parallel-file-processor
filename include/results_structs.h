@@ -49,8 +49,6 @@ struct FileResult {
     std::string error_message;
     std::string file_path;
 
-    size_t file_size_bytes = 0;
-    size_t word_count = 0;
     size_t processing_time_us = 0;
 
     FileResult() : replace_result(-1){}

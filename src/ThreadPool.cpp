@@ -39,7 +39,11 @@ void ThreadPool::thread_task() {
     }
 }
 
-ThreadPool::ThreadPool(int num_threads, size_t max_queue_size ) {
+ThreadPool::ThreadPool(size_t num_threads, size_t max_queue_size ) {
+
+    if (num_threads == 0) {
+        num_threads = std::thread::hardware_concurrency();
+    }
 
     this->max_queue_size = max_queue_size;
     for (int i = 0; i < num_threads; i++) {
