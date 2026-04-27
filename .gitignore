@@ -1,2 +1,4 @@
+test_dir/
+test_dir2/
 cmake-build-debug/
 .idea/
