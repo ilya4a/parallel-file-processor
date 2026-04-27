@@ -60,11 +60,10 @@ public:
         }
 
 
-        Builder& set_root_path(const std::string& paths_str) {
-            std::istringstream iss(paths_str);
-            std::string token;
-            while (iss >> token) {
-                root_paths_.emplace_back(std::move(token));
+        Builder& set_root_path(std::vector<std::string>&& dirs) {
+
+            for (auto &i: dirs) {
+                root_paths_.emplace_back(std::move(i));
             }
             return *this;
         }

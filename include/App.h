@@ -9,7 +9,15 @@
 
 
 class App {
+    Config conf;
+
+    void parse_conf() {
+
+    }
+
 public:
+
+    App(Config config) : conf(config){}
 
     void handle_results(std::vector<std::future<FileResult>> &results) {
 
@@ -37,7 +45,7 @@ public:
     }
 
 
-    void run(Config conf) {
+    void run() {
 
         ThreadPool thread_pool{};
 
@@ -50,7 +58,7 @@ public:
             for (auto const & path: files) {
                 FileProcessor file_processor(path, conf);
 
-                results.push_back(thread_pool.add_task([&conf, path] () -> FileResult {
+                results.push_back(thread_pool.add_task([this, path] () -> FileResult {
                     FileProcessor file_processor(path, conf);
                     return file_processor.process_file();
                 }));
