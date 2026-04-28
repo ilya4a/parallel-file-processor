@@ -1,9 +1,9 @@
+#include "FileProcessor.h"
 
-
-#include "../include/FileProcessor.h"
+#include <iostream>
 #include <unistd.h>
-#include "../include/TextSearcher.h"
-#include "../include/TextReplacer.h"
+#include "ReplaceOptions.h"
+#include "utils.h"
 
 std::string FileProcessor::readFileToString(const std::filesystem::path &path){
     std::ifstream file(path, std::ios::binary);
@@ -27,7 +27,7 @@ std::string FileProcessor::readFileToString(const std::filesystem::path &path){
 std::string FileProcessor::create_temp_file() {
     std::string tmpl = file_path.string() + ".tmp.XXXXXX";
     int fd = mkstemp(tmpl.data());
-    if (fd == -1) {
+    if (fd < 0) {
         throw std::runtime_error("mkstemp failed");
     }
     close(fd);
@@ -40,7 +40,7 @@ SearchResult FileProcessor::search()  {
 
     SearchOptions options(config.query(), config.use_regex(), config.case_sensitive());
 
-    SearchResult search_result = TextSearcher::search(source, options);
+    SearchResult search_result = utils::search(source, options);
 
     return search_result;
 }
@@ -59,7 +59,7 @@ ReplaceResult FileProcessor::replace(SearchResult const& search_result) {
         .set_tmp_file_path(temp_file_name)
         .build();
 
-        replace_result = TextReplacer::replace(replace_options);
+        replace_result = utils::replace(replace_options);
 
     }catch (std::exception &e) {
         replace_result.error_massage = "Replace error in file" + file_path.string() + " : " + e.what();

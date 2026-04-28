@@ -1,3 +1,0 @@
-
-
-#include "../include/App.h"

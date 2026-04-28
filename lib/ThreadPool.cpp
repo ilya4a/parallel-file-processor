@@ -1,4 +1,4 @@
-#include "../include/ThreadPool.h"
+#include "ThreadPool.h"
 
 #include <iostream>
 #include <ostream>
@@ -46,7 +46,7 @@ ThreadPool::ThreadPool(size_t num_threads, size_t max_queue_size ) {
     }
 
     this->max_queue_size = max_queue_size;
-    for (int i = 0; i < num_threads; i++) {
+    for (size_t i = 0; i < num_threads; i++) {
         threads.emplace_back(&ThreadPool::thread_task, this);
     }
 }

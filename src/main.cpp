@@ -1,37 +1,8 @@
 #include <iostream>
-
-#include "include/App.h"
-#include "include/Config.h"
-#include "include/ThreadPool.h"
-
-std::mutex cout_m;
-
-int test_task(int id) {
-
-   std::unique_lock<std::mutex> lock(cout_m);
-   std::cout << "task " << id << " in thread: "
-             << std::this_thread::get_id() << "\n";
-   lock.unlock();
-   std::this_thread::sleep_for(std::chrono::milliseconds(100));
-   return id*id;
-}
-
-void run_pool() {
-    ThreadPool pool(4, 8);
-    std::vector<std::future<int>> results;
-
-    for (int i = 0; i < 20; ++i) {
-        results.push_back(pool.add_task(test_task, i));
-    }
-
-    pool.wait_all();
-
-    for (auto& i: results) {
-        std::cout << i.get() << std::endl;
-    }
-}
-
-#include "third_party/CLI11.hpp"
+#include <CLI11.hpp>
+#include "App.h"
+#include "Config.h"
+#include "ThreadPool.h"
 
 Config parse_cli(int argc, char* argv[]) {
     CLI::App app{"Multithreaded file search & replace utility"};

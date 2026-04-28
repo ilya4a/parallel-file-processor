@@ -4,7 +4,7 @@
 
 #include <filesystem>
 #include <utility>
-#include "results_structs.h"
+#include "utils.h"
 
 namespace fs = std::filesystem;
 

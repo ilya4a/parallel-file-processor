@@ -1,20 +1,25 @@
-cmake_minimum_required(VERSION 4.1)
+cmake_minimum_required(VERSION 3.20)
 project(ThreadPool)
 
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_executable(ThreadPool main.cpp
-        src/ThreadPool.cpp
-        include/ThreadPool.h
-        src/App.cpp
-        include/App.h
-        include/FileCollector.h
-        include/Config.h
-        src/FileProcessor.cpp
-        include/FileProcessor.h
-        include/results_structs.h
-        include/TextSearcher.h
-        src/TextReplacer.cpp
-        include/TextReplacer.h
-        include/ReplaceOptions.h
+if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    add_compile_options(-Wall -Wextra)
+endif()
+
+add_library(CLI11 INTERFACE)
+target_include_directories(CLI11 INTERFACE third_party)
+
+add_library(core_lib STATIC
+        lib/ThreadPool.cpp
+        lib/App.cpp
+        lib/FileProcessor.cpp
+        lib/utils.cpp
 )
+
+target_include_directories(core_lib PUBLIC include)
+
+add_executable(ThreadPool src/main.cpp)
+
+target_link_libraries(ThreadPool PRIVATE core_lib CLI11)
