@@ -41,17 +41,22 @@ struct SearchResult {
 struct ReplaceResult {
     size_t num_replacements;
     std::string error_massage;
+    size_t bytes;
     ReplaceResult(size_t num = 0) : num_replacements(num){};
 };
 
 
 namespace utils {
+
+
     std::vector<fs::path> collectFilesRecursively(const fs::path& root,  const std::vector<std::string>& allowed_extensions);
 
     ReplaceResult replace(ReplaceOptions& options);
 
     std::pair<size_t, size_t> find_line_and_column (std::vector<size_t> const& line_starts, size_t pos);
     SearchResult search(std::string_view content, const SearchOptions& options);
+
+    void print_line_from_file(const fs::path& filePath, std::vector<Match>& matches, size_t match_len = 0);
 
 }
 

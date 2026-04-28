@@ -7,10 +7,62 @@
 #include <algorithm>
 #include <fstream>
 #include <iostream>
-
+#include <string>
 #include "ReplaceOptions.h"
 
 namespace utils {
+
+
+    void print_line_with_caret_under_line(const std::string& line, size_t line_num, const std::vector<size_t>& starts, size_t length){
+
+        std::string prefix = std::to_string(line_num) + ": ";
+        std::cout << prefix << line << '\n';
+
+        std::string underline(prefix.size() + line.size(), ' ');
+
+        for (size_t start : starts) {
+            size_t underline_start = prefix.size() + start;
+            size_t underline_end = std::min(underline_start + length, underline.size());
+            for (size_t i = underline_start; i < underline_end; ++i) {
+                underline[i] = '_';
+            }
+        }
+        std::cout << underline << '\n';
+    }
+
+    void print_line_from_file(const fs::path& filePath, std::vector<Match>& matches, size_t match_len) {
+        if (match_len == 0) match_len = matches[0].length;
+
+        // std::cout << "DEBUG line=" << match.line
+        //   << " byte_pos=" << match.byte_pos
+        //   << " column_bytes=" << match.column_bytes
+        //   << " length=" << match.length
+        //   << " match.lenght=" << match.length
+        //   << " line=[" << match.line << "]" << std::endl;
+
+        if (!std::filesystem::exists(filePath)) {
+            throw std::runtime_error( "printLineFromFile: file does not exists: " + filePath.string());
+        }
+
+        std::ifstream file(filePath);
+        if (!file.is_open()) {
+            throw std::runtime_error( "printLineFromFile: cannot open file:  " + filePath.string());
+        }
+
+        std::string line;
+        size_t currentLine = 0;
+        while (std::getline(file, line)) {
+            if (currentLine == matches[0].line) {
+                std::vector<size_t> starts(matches.size());
+                for (size_t i = 0; i < matches.size(); i++) starts[i] = matches[i].column_bytes;
+                print_line_with_caret_under_line(line, matches[0].line, starts, match_len);
+                return;
+            }
+            ++currentLine;
+        }
+        file.close();
+    }
+
     std::vector<fs::path> collectFilesRecursively(const fs::path& root,  const std::vector<std::string>& allowed_extensions) {
         std::vector<fs::path> result;
 

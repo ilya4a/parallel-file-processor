@@ -16,6 +16,7 @@ struct Config {
     bool use_regex() const { return use_regex_; }
     bool case_sensitive() const { return case_sensitive_; }
     bool use_replacement() const { return use_replacement_; }
+    bool file_info() const { return file_info_; }
 
     size_t thread_count() const { return thread_count_; }
     size_t detail_level() const { return detail_level_; }
@@ -29,6 +30,7 @@ private:
     bool use_regex_;
     bool case_sensitive_;
     bool use_replacement_;
+    bool file_info_;
     size_t thread_count_;
     size_t detail_level_;
 
@@ -42,6 +44,7 @@ public:
         bool use_regex_;
         bool case_sensitive_;
         bool use_replacement_;
+        bool file_info_;
 
         size_t thread_count_;
         size_t detail_level_;
@@ -63,11 +66,17 @@ public:
             use_regex_ = false;
             case_sensitive_ = false;
             use_replacement_ = false;
+            file_info_ = false;
 
             is_build = false;
 
             thread_count_ = 0;
             detail_level_ = 1;
+        }
+
+        Builder& set_file_info(bool file_info) {
+            file_info_ = file_info;
+            return *this;
         }
 
         Builder& set_detail_level(size_t n) {
@@ -127,6 +136,7 @@ public:
                 use_regex_,
                 case_sensitive_,
                 use_replacement_,
+                file_info_,
                 thread_count_,
                 detail_level_);
 
@@ -145,6 +155,7 @@ private:
     bool use_regex,
     bool case_sensitive,
     bool use_replacement,
+    bool file_info,
     size_t thread_count,
     size_t detail_level
     ) :
@@ -156,6 +167,7 @@ private:
     use_regex_(use_regex),
     case_sensitive_(case_sensitive),
     use_replacement_(use_replacement),
+    file_info_(file_info),
     thread_count_(thread_count),
     detail_level_(detail_level){
     }

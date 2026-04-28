@@ -75,6 +75,7 @@ ReplaceResult FileProcessor::replace(SearchResult const& search_result) {
 
     std::filesystem::rename(temp_file_name, file_path);
 
+    replace_result.bytes = config.replacement().size();
     return replace_result;
 }
 

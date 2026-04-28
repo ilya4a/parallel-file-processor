@@ -19,6 +19,7 @@ Config parse_cli(int argc, char* argv[]) {
     std::string replacement;
     std::vector<std::string> extensions;
     bool case_sensitive = false;
+    bool file_info = false;
     int detail = 0;
     int threads = 0;
 
@@ -33,6 +34,8 @@ Config parse_cli(int argc, char* argv[]) {
     app.add_option("-e,--extensions", extensions, "File extensions (e.g. .cpp .h)");
 
     app.add_flag("-s,--case-sensitive", case_sensitive, "Case-sensitive search");
+
+    app.add_flag("-i,--file-info", case_sensitive, "file info");
 
     app.add_option("-j,--threads", threads, "Number of threads (0=auto)");
 
@@ -67,14 +70,17 @@ Config parse_cli(int argc, char* argv[]) {
 
 int main(int argc, char* argv[]) {
 
-    Config config = parse_cli(argc, argv);
+    // Config config = parse_cli(argc, argv);
 
-    // Config config = Config::Builder()
-    // .set_root_path({"../test_dir2", "../test_dir"})
-    // .set_query("77777")
-    // .set_replacement("s...")
-    // .set_sensitive(false)
-    // .build();
+    Config config = Config::Builder()
+    .set_root_path({"../test_dir2", "../test_dir"})
+    .set_query("s...")
+    .set_replacement("777")
+    .set_file_info(true)
+    .set_sensitive(false)
+    .set_detail_level(3)
+    .build();
+
 
     App app(config);
     app.run();
