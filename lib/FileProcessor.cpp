@@ -28,7 +28,7 @@ std::string FileProcessor::create_temp_file() {
     std::string tmpl = file_path.string() + ".tmp.XXXXXX";
     int fd = mkstemp(tmpl.data());
     if (fd < 0) {
-        throw std::runtime_error("mkstemp failed");
+        throw std::runtime_error("FileProcessor: mkstemp failed");
     }
     close(fd);
     return tmpl;

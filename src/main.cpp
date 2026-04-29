@@ -7,13 +7,15 @@
 
 Config parse_cli(int argc, char* argv[]) {
     CLI::App app{"Multithreaded file search & replace utility"};
+    app.name("frep");
 
     app.footer(
-        "Examples:\n"
-        "thisgrep -p ./src -q \"TODO\" -v                     # Find all occurrences\n"
-        "thisgrep -p . -q \"FIXME\" -vv                    # Verbose output (file‑level details)"
-        "thisgrep -p ../dir/ -p ../dir2/ -q \"query\" -r \"replace\" -vvv"
-    );
+    "Examples:\n"
+    "  frep -p /path/to/dir /another/file -q \"TODO\" -v               # find all occurrences, brief output\n"
+    "  frep -p /path -q \"TODO\" -vv -i                               # verbose file‑level details + statistics (time, words)\n"
+    "  frep -p /path -q \"TODO\" -r \"replace\"                       # search and replace, default brief output\n"
+    "  frep -p /path -q \"TODO\" -r \"replace\" -vvv -i               # full output with underline for each match/replace + statistics"
+);
 
     std::vector<std::string> path_strings;
     std::string query;
@@ -30,13 +32,13 @@ Config parse_cli(int argc, char* argv[]) {
 
     app.add_option("-q,--query", query, "Search pattern")->required();
 
-    auto *opt_replacement = app.add_option("-r,--replacement", replacement, "Replacement string");
+    auto *opt_replacement = app.add_option("-r,--replacement", replacement, "Replacement string (if omitted, search only)");
 
     app.add_option("-e,--extensions", extensions, "File extensions (e.g. .cpp .h)");
 
     app.add_flag("-s,--case-sensitive", case_sensitive, "Case-sensitive search");
 
-    app.add_flag("-i,--file-info", file_info, "file info");
+    app.add_flag("-i,--file-info", file_info, "Show per‑file statistics (time, word count, etc.)");
 
     app.add_option("-j,--threads", threads, "Number of threads (0=auto)");
 
@@ -86,7 +88,6 @@ int main(int argc, char* argv[]) {
 
     App app(config);
     app.run();
-
 
     // std::cout << "------------------------------" << std::endl;
     //

@@ -1,7 +1,3 @@
-//
-// Created by ilya on 4/28/26.
-//
-
 #include "utils.h"
 
 #include <algorithm>
@@ -17,11 +13,11 @@ namespace utils {
         std::vector<fs::path> result;
 
         if (allowed_extensions.empty()) {
-            throw std::runtime_error("collectFilesRecursively: allowed_extensions is empty");
+            throw std::runtime_error("Utils: allowed_extensions is empty");
         }
 
         if (!fs::exists(root)) {
-            throw std::runtime_error("collectFilesRecursively: path does not exist");
+            throw std::runtime_error("Utils: path does not exist");
         }
 
         if (fs::is_regular_file(root)) {
@@ -35,7 +31,7 @@ namespace utils {
         }
 
         if (!fs::is_directory(root)) {
-            throw std::runtime_error("collectFilesRecursively: path is not a directory or regular file");
+            throw std::runtime_error("Utils: path is not a directory or regular file");
         }
 
         for (const auto& entry : fs::recursive_directory_iterator(root)) {
@@ -60,12 +56,12 @@ namespace utils {
         std::ofstream out(options.tmp_file_path(), std::ios::binary | std::ios::trunc);
 
         if (!out) {
-            throw std::runtime_error("Failed to write to file: " + options.tmp_file_path().string());
+            throw std::runtime_error("Utils: failed to write to file: " + options.tmp_file_path().string());
         }
 
         size_t last_pos = 0;
         for (const auto &i: options.search_result().matches) {
-            if (i.byte_pos < last_pos) {throw std::runtime_error("TextReplacer: Write failed");}
+            if (i.byte_pos < last_pos) {throw std::runtime_error("TextReplacer: write failed");}
             out.write(options.content().data() + last_pos, i.byte_pos - last_pos);
             out.write(options.replacement().data(), options.replacement_size());
             last_pos = i.byte_pos + i.length;
@@ -74,7 +70,7 @@ namespace utils {
         out.write(options.content().data() + last_pos, options.content().size() - last_pos);
 
         if (!out) {
-            throw std::runtime_error("TextReplacer: Write failed");
+            throw std::runtime_error("TextReplacer: write failed");
         }
         out.close();
         return ReplaceResult{options.search_result().matches.size()};

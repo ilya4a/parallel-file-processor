@@ -53,7 +53,7 @@ std::future<typename std::invoke_result_t<F, Args...> > ThreadPool::add_task(F&&
 
     queue_full_cv.wait(lock, [this](){return tasks.size() < max_queue_size || stop;});
 
-    if (stop)  throw std::runtime_error("ThreadPool: add_task on stopped pool");
+    if (stop)  throw std::runtime_error("ThreadPool: add_task on a stopped pool");
 
     tasks.emplace([p_task_ptr](){(*p_task_ptr)();});
 

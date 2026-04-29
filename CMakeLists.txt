@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(ThreadPool)
+project(frep)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -20,6 +20,6 @@ add_library(core_lib STATIC
 
 target_include_directories(core_lib PUBLIC include)
 
-add_executable(ThreadPool src/main.cpp)
+add_executable(frep src/main.cpp)
 
-target_link_libraries(ThreadPool PRIVATE core_lib CLI11)
+target_link_libraries(frep PRIVATE core_lib CLI11)

@@ -127,7 +127,7 @@ public:
 
         Config build() {
 
-            if (root_paths_.empty() || query_.empty()) throw std::runtime_error("Config: incorrect call of builder");
+            if (root_paths_.empty() || query_.empty()) throw std::runtime_error("Config: invalid Builder call");
 
             if (is_build) throw std::runtime_error("Config: repeated call of build");
 

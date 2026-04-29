@@ -42,7 +42,7 @@ struct ReplaceOptions {
         }
 
         ReplaceOptions build() {
-            if (tmp_file_path_.empty()) throw std::runtime_error("ReplaceOptions: Builder: tmp_file_path is empty");
+            if (tmp_file_path_.empty()) throw std::runtime_error("ReplaceOptions: tmp_file_path is empty");
             if (is_build) throw std::runtime_error("ReplaceOptions: repeated call of build()");
 
             ReplaceOptions replace_options ( std::move(replacement_),

@@ -85,12 +85,12 @@ void print_line_from_file(const fs::path& filePath, std::vector<Match>& matches,
     //   << " line=[" << matches[0].line << "]" << std::endl;
 
     if (!std::filesystem::exists(filePath)) {
-        throw std::runtime_error( "printLineFromFile: file does not exists: " + filePath.string());
+        throw std::runtime_error( "App: file does not exist: " + filePath.string());
     }
 
     std::ifstream file(filePath);
     if (!file.is_open()) {
-        throw std::runtime_error( "printLineFromFile: cannot open file:  " + filePath.string());
+        throw std::runtime_error( "App: cannot open file: " + filePath.string());
     }
 
     std::string line;
@@ -123,8 +123,6 @@ void print_info(FileResult& file_result, size_t max_w_time = 0, size_t max_w_wor
 }
 
 void App::print_detail_level3(FileResult& file_result) {
-
-
 
     if (file_result.search_result.matches.size() > 0) {
 
@@ -178,29 +176,8 @@ void App::print_detail_level3(FileResult& file_result) {
     }
 }
 
-void handle_fail_results(std::vector<FileResult>& results) {
-    for (auto& i: results) {
-        std::cerr << "Error in file: " << i.file_path << ": " << i.error_message << std::endl;
-    }
-}
 
 void App::handle_results(std::vector<FileResult> &results)  {
-    // std::vector<FileResult> fail_results;
-    // std::vector<FileResult> results(results_future.size());
-    //
-    // int i = 0;
-    // for (auto& fr : results_future) {
-    //     FileResult result_temp = fr.get();
-    //
-    //     if (!result_temp.error_message.empty()) {
-    //         fail_results.push_back(std::move(result_temp));
-    //     }else {
-    //         results[i] = std::move(result_temp);
-    //     }
-    //     i++;
-    // }
-
-
     size_t matches_total = 0; size_t words_total = 0; size_t bytes_total = 0; size_t lines_total = 0;
 
     size_t max_w_time = 0, max_w_words = 0, max_w_size = 0, max_w_lines = 0;
@@ -309,8 +286,6 @@ void App::run() {
     if (conf.file_info()) {
         std::cout << "TOTAL TIME: " << processing_time_us << " microseconds" << std::endl;
     }
-
-    handle_fail_results(fail_results);
 }
 
 
