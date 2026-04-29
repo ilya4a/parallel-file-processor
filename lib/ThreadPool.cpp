@@ -1,8 +1,5 @@
 #include "ThreadPool.h"
 
-#include <iostream>
-#include <ostream>
-
 void ThreadPool::thread_task() {
     while (true) {
 
@@ -21,9 +18,10 @@ void ThreadPool::thread_task() {
         try {
             task();
         } catch (const std::exception& e) {
-            std::cerr << "task threw " << e.what() << std::endl;
+            std::string s = e.what();
+            exceptions.emplace_back("task threw " + s);
         } catch (...) {
-            std::cerr << "task threw unknown exception" << std::endl;
+            exceptions.push_back("task threw unknown exception");
         }
 
         --active_tasks;
@@ -68,7 +66,6 @@ ThreadPool::~ThreadPool() {
     }
 
     for (auto& t : threads) t.join();
-
 }
 
 

@@ -75,12 +75,12 @@ int main(int argc, char* argv[]) {
 
     Config config = Config::Builder()
     // .set_root_path({"../test_dir2", "../test_dir"})
-    .set_root_path({"../src", "../lib"})
+    .set_root_path({"../src/main.cpp", "../lib"})
     .set_query("std::cerr")
     // .set_replacement("Gone Cannot")
-    .set_file_info(true)
+    // .set_file_info(true)
     .set_sensitive(true)
-    .set_detail_level(3)
+    .set_detail_level(1)
     .build();
 
     App app(config);

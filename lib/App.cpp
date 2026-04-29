@@ -17,7 +17,7 @@ size_t get_terminal_width() {
 
 void print_line_with_caret_under_line(const std::string& line, size_t line_num, const std::vector<size_t>& starts, size_t length){
 
-    std::string prefix = std::to_string(line_num) + ": ";
+    std::string prefix = std::to_string(line_num + 1) + ": ";
     std::cout << prefix << line << '\n';
 
     std::string underline(prefix.size() + line.size(), ' ');
@@ -85,12 +85,11 @@ void print_info(FileResult& file_result, size_t max_w_time = 0, size_t max_w_wor
     std::string line(get_terminal_width(), '-');
     std::cout << line << '\n';
 
-    std::cout << "time: "        << std::setw(max_w_time)  << file_result.processing_time_us << " microseconds"
-              << " | total_words: " << std::setw(max_w_words) << file_result.search_result.total_words
-              << " | total_size: "  << std::setw(max_w_size)  << file_result.search_result.total_bytes
+    std::cout << "total_words: " << std::setw(max_w_words) << file_result.search_result.total_words
               << " | total_lines: " << std::setw(max_w_lines) << file_result.search_result.lines
+              << " | time: " << std::setw(max_w_time)  << file_result.processing_time_us << " microseconds"
+              << " | total_size: "  << std::setw(max_w_size)  << file_result.search_result.total_bytes
               << '\n';
-
 }
 
 
@@ -98,13 +97,9 @@ void App::print_detail_level3(FileResult& file_result) {
 
     if (file_result.search_result.matches.size() > 0) {
 
-        std::cout  << "[" << file_result.file_path << "]" << std::endl;
-        std::cout << "found: " << file_result.search_result.matches.size();
-        if (file_result.replace_result.num_replacements > 0) {
-            std::cout << " replaces" << std::endl;
-        }else {
-            std::cout << " matches" << std::endl;
-        }
+        std::cout  << "[" << file_result.file_path << "]" << '\n';
+        std::cout << "found: " << file_result.search_result.matches.size() << '\n';
+
 
         size_t matches_count = file_result.search_result.matches.size();
 
@@ -144,19 +139,30 @@ void App::print_detail_level3(FileResult& file_result) {
         std::string line2(get_terminal_width(), '=');
         std::cout << line2 << '\n';
     }
-    // std::cout << std::endl;
-
 }
 
+void handle_fail_results(std::vector<FileResult>& results) {
+    for (auto& i: results) {
+        std::cerr << "Error in file: " << i.file_path << ": " << i.error_message << std::endl;
+    }
+}
 
-void App::handle_results(std::vector<std::future<FileResult>> &results_future)  {
-
+std::vector<FileResult> App::handle_results(std::vector<std::future<FileResult>> &results_future)  {
+    std::vector<FileResult> fail_results;
     std::vector<FileResult> results(results_future.size());
+
     int i = 0;
     for (auto& fr : results_future) {
-        results[i] = fr.get();
+        FileResult result_temp = fr.get();
+
+        if (!result_temp.error_message.empty()) {
+            fail_results.push_back(std::move(result_temp));
+        }else {
+            results[i] = std::move(result_temp);
+        }
         i++;
     }
+
 
     size_t matches_total = 0; size_t words_total = 0; size_t bytes_total = 0; size_t lines_total = 0;
 
@@ -195,18 +201,19 @@ void App::handle_results(std::vector<std::future<FileResult>> &results_future)  
         lines_total += file_result.search_result.lines;
     }
 
-
     if (conf.use_replacement()) {
-        std::cout << "replaces total: " << matches_total << std::endl;
+        std::cout << "REPLACES TOTAL: " << matches_total << std::endl;
     }else {
-        std::cout << "matches total: " << matches_total << std::endl;
+        std::cout << "MATCHES TOTAL: " << matches_total << std::endl;
     }
 
     if (conf.file_info()) {
-        std::cout << "words total: " << words_total
-        << " | bytes total: " << bytes_total
-        << " | lines total: " << lines_total << std::endl;
+        std::cout << "WORDS TOTAL: " << words_total
+        << " | BYTES TOTAL: " << bytes_total
+        << " | LINES TOTAL: " << lines_total << std::endl;
     }
+
+    return fail_results;
 }
 
 
@@ -218,8 +225,13 @@ void App::run() {
     std::vector<std::future<FileResult>> results;
 
     for (auto& i : conf.root_paths() ) {
-
-        std::vector<fs::path> files = utils::collectFilesRecursively(i, conf.extensions());
+        std::vector<fs::path> files;
+        try {
+            files = utils::collectFilesRecursively(i, conf.extensions());
+        }catch (std::exception& e) {
+            std::cerr << "Error in path " << i << "  " << e.what() << std::endl;
+            continue;
+        }
 
         for (auto const & path: files) {
             FileProcessor file_processor(path, conf);
@@ -235,13 +247,11 @@ void App::run() {
     auto end = std::chrono::steady_clock::now();
     size_t processing_time_us = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
 
-    handle_results(results);
+    std::vector<FileResult> fail_results =  handle_results(results);
 
     if (conf.file_info()) {
         std::cout << "TOTAL TIME: " << processing_time_us << " microseconds" << std::endl;
     }
+
+    handle_fail_results(fail_results);
 }
-
-
-
-

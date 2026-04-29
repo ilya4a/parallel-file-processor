@@ -12,18 +12,30 @@
 
 namespace utils {
 
-
     std::vector<fs::path> collectFilesRecursively(const fs::path& root,  const std::vector<std::string>& allowed_extensions) {
+
         std::vector<fs::path> result;
 
         if (allowed_extensions.empty()) {
-            std::cout << "collectFilesRecursively: allowed_extensions is empty" << std::endl;
-            return result;
+            throw std::runtime_error("collectFilesRecursively: allowed_extensions is empty");
         }
 
-        if (!fs::exists(root) || !fs::is_directory(root)) {
-            std::cout << "collectFilesRecursively: dir does not exists" << std::endl;
-            return result;
+        if (!fs::exists(root)) {
+            throw std::runtime_error("collectFilesRecursively: path does not exist");
+        }
+
+        if (fs::is_regular_file(root)) {
+            fs::path ext = root.extension();
+            for (const auto& allowed : allowed_extensions) {
+                if (ext == allowed) {
+                    return {root};
+                }
+            }
+            return {};
+        }
+
+        if (!fs::is_directory(root)) {
+            throw std::runtime_error("collectFilesRecursively: path is not a directory or regular file");
         }
 
         for (const auto& entry : fs::recursive_directory_iterator(root)) {

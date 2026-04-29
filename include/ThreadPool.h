@@ -9,6 +9,8 @@
 
 class ThreadPool {
 
+    std::vector<std::string> exceptions;
+
     std::vector<std::thread> threads;
     std::queue<std::function<void()>> tasks;
     std::mutex m;
