@@ -63,6 +63,8 @@ public:
                 ".csv", ".tsv", ".sql", ".patch", ".diff"
                 };
 
+            replacement_ = "";
+
             use_regex_ = false;
             case_sensitive_ = false;
             use_replacement_ = false;

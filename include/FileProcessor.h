@@ -17,7 +17,7 @@ struct FileResult {
 
     size_t processing_time_us = 0;
 
-    FileResult() : replace_result(-1){}
+    FileResult() : replace_result(0){}
 };
 
 class FileProcessor {

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <CLI11.hpp>
+
 #include "App.h"
 #include "Config.h"
 #include "ThreadPool.h"
@@ -73,14 +74,14 @@ int main(int argc, char* argv[]) {
     // Config config = parse_cli(argc, argv);
 
     Config config = Config::Builder()
-    .set_root_path({"../test_dir2", "../test_dir"})
-    .set_query("s...")
-    .set_replacement("777")
+    // .set_root_path({"../test_dir2", "../test_dir"})
+    .set_root_path({"../src", "../lib"})
+    .set_query("std::cerr")
+    // .set_replacement("Gone Cannot")
     .set_file_info(true)
-    .set_sensitive(false)
+    .set_sensitive(true)
     .set_detail_level(3)
     .build();
-
 
     App app(config);
     app.run();

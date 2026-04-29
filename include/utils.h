@@ -17,7 +17,7 @@ struct Match {
     size_t length;
 
     Match(size_t line, size_t column_bytes,  size_t byte_pos) : line(line), column_bytes(column_bytes), byte_pos(byte_pos) {
-        length = -1;
+        length = 0;
     };
 };
 
@@ -56,7 +56,7 @@ namespace utils {
     std::pair<size_t, size_t> find_line_and_column (std::vector<size_t> const& line_starts, size_t pos);
     SearchResult search(std::string_view content, const SearchOptions& options);
 
-    void print_line_from_file(const fs::path& filePath, std::vector<Match>& matches, size_t match_len = 0);
+    // void print_line_from_file(const fs::path& filePath, std::vector<Match>& matches, size_t match_len = 0);
 
 }
 

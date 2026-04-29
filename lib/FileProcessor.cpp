@@ -69,7 +69,6 @@ ReplaceResult FileProcessor::replace(SearchResult const& search_result) {
             fs::remove(temp_file_name, ec);
         }
 
-        std::cerr << "Replace error in " << file_path << ": " << e.what() << std::endl;
         return replace_result;
     }
 
