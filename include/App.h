@@ -3,7 +3,6 @@
 
 #include "Config.h"
 #include "FileProcessor.h"
-#include "ThreadPool.h"
 
 class App {
     Config conf;

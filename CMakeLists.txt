@@ -9,7 +9,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 endif()
 
 add_library(CLI11 INTERFACE)
-target_include_directories(CLI11 INTERFACE third_party)
+target_include_directories(CLI11 INTERFACE third_party/CLI11/include)
 
 add_library(core_lib STATIC
         lib/ThreadPool.cpp
@@ -17,9 +17,9 @@ add_library(core_lib STATIC
         lib/FileProcessor.cpp
         lib/utils.cpp
 )
-
 target_include_directories(core_lib PUBLIC include)
 
-add_executable(frep src/main.cpp)
+target_compile_definitions(core_lib PUBLIC $<$<CONFIG:Debug>:FREP_DEBUG>)
 
+add_executable(frep src/main.cpp)
 target_link_libraries(frep PRIVATE core_lib CLI11)

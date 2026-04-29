@@ -2,4 +2,5 @@ original.txt
 test_dir/
 test_dir2/
 cmake-build-debug/
+cmake-build-release/
 .idea/

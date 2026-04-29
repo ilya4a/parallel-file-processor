@@ -1,5 +1,5 @@
 #include <iostream>
-#include <CLI11.hpp>
+#include "CLI/CLI.hpp"
 
 #include "App.h"
 #include "Config.h"
@@ -20,7 +20,7 @@ Config parse_cli(int argc, char* argv[]) {
     std::vector<std::string> path_strings;
     std::string query;
     std::string replacement;
-    std::vector<std::string> extensions;
+    std::string extensions;
     bool case_sensitive = false;
     bool file_info = false;
     bool sequential = false;
@@ -67,7 +67,15 @@ Config parse_cli(int argc, char* argv[]) {
     if (threads > 0) builder.set_thread_count(threads);
     if (detail > 0) builder.set_detail_level(detail);
 
-    if (!extensions.empty()) builder.set_extensions(std::move(extensions));
+    std::vector<std::string> extensions_vector;
+
+    std::istringstream iss(extensions);
+    std::string ext;
+    while (iss >> ext) {
+        extensions_vector.push_back(ext);
+    }
+
+    if (!extensions.empty()) builder.set_extensions(std::move(extensions_vector));
 
     if (case_sensitive) builder.set_sensitive(true);
     if (file_info) builder.set_file_info(true);
@@ -80,16 +88,6 @@ Config parse_cli(int argc, char* argv[]) {
 int main(int argc, char* argv[]) {
 
     Config config = parse_cli(argc, argv);
-
-    // Config config = Config::Builder()
-    // // .set_root_path({"../test_dir2", "../test_dir"})
-    // .set_root_path({"../src/main.cpp", "../lib"})
-    // .set_query("std::cerr")
-    // // .set_replacement("Gone Cannot")
-    // // .set_file_info(true)
-    // .set_sensitive(true)
-    // .set_detail_level(1)
-    // .build();
 
     App app(config);
     if (!config.sequential()) {

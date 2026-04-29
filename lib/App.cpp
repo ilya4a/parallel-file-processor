@@ -1,5 +1,11 @@
 #include "App.h"
+
+#include <iostream>
+#include <unistd.h>
 #include <sys/ioctl.h>
+
+#include "Debug.h"
+#include "ThreadPool.h"
 #include "utils.h"
 
 App::App(Config config) : conf(config){}
@@ -54,14 +60,7 @@ void print_line_with_caret_under_line(const std::string& line, size_t line_num, 
 
     std::string underline(prefix.size() + new_line.size(), ' ');
 
-    // std::cout << "DEBUG underline: line.size=" << line.size()
-    //       << " starts.size=" << starts.size() << " length=" << length << '\n';
-    // for (size_t start : starts) {
-    //     std::cout << "  start=" << start
-    //               << " underline_start=" << prefix.size() + start
-    //               << " underline_end=" << std::min(prefix.size() + start + length, underline.size())
-    //               << '\n';
-    // }
+    DEBUG_LOG( "print_line_with_caret_under_line: line.size=" << line.size() << " starts.size=" << starts.size() << " length=" << length << '\n');
 
     for (size_t start : new_starts) {
         size_t underline_start = prefix.size() + start;
@@ -76,13 +75,11 @@ void print_line_with_caret_under_line(const std::string& line, size_t line_num, 
 void print_line_from_file(const fs::path& filePath, std::vector<Match>& matches, size_t match_len = 0) {
     if (match_len == 0) match_len = matches[0].length;
 
-    // std::cout << "DEBUG line=" << matches[0].line
-    //   << " byte_pos=" << matches[0].byte_pos
-    //   << " column_bytes=" << matches[0].column_bytes
-    //   << " length=" << matches[0].length
-    //   << " match_len=" << match_len
-    //   << " match.lenght=" << matches[0].length
-    //   << " line=[" << matches[0].line << "]" << std::endl;
+    DEBUG_LOG("print_line_from_file: line=" << matches[0].line
+      << " byte_pos=" << matches[0].byte_pos
+      << " column_bytes=" << matches[0].column_bytes
+      << " match_len=" << match_len
+      << " match.lenght=" << matches[0].length);
 
     if (!std::filesystem::exists(filePath)) {
         throw std::runtime_error( "App: file does not exist: " + filePath.string());
