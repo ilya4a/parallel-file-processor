@@ -23,6 +23,7 @@ Config parse_cli(int argc, char* argv[]) {
     std::vector<std::string> extensions;
     bool case_sensitive = false;
     bool file_info = false;
+    bool sequential = false;
     int detail = 0;
     int threads = 0;
 
@@ -39,6 +40,9 @@ Config parse_cli(int argc, char* argv[]) {
     app.add_flag("-s,--case-sensitive", case_sensitive, "Case-sensitive search");
 
     app.add_flag("-i,--file-info", file_info, "Show per‑file statistics (time, word count, etc.)");
+
+    app.add_flag("-S,--sequential", sequential,
+             "Run sequentially (single‑threaded, default: parallel with auto threads)");
 
     app.add_option("-j,--threads", threads, "Number of threads (0=auto)");
 
@@ -67,6 +71,7 @@ Config parse_cli(int argc, char* argv[]) {
 
     if (case_sensitive) builder.set_sensitive(true);
     if (file_info) builder.set_file_info(true);
+    if (sequential) builder.set_sequential(true);
 
     return builder.build();
 }
@@ -87,12 +92,11 @@ int main(int argc, char* argv[]) {
     // .build();
 
     App app(config);
-    app.run();
-
-    // std::cout << "------------------------------" << std::endl;
-    //
-    // App app2(config);
-    // app2.run_sequentially();
+    if (!config.sequential()) {
+        app.run();
+    }else {
+        app.run_sequentially();
+    }
 
     return 0;
 }
