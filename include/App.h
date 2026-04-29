@@ -7,15 +7,18 @@
 
 class App {
     Config conf;
+
+    void print_detail_level3(FileResult &file_result);
+    void handle_results(std::vector<FileResult> &results);
+
 public:
+    static constexpr size_t default_tab_width = 4;
 
     App(Config config);
 
-    void print_detail_level3(FileResult &file_result);
-
-    std::vector<FileResult> handle_results(std::vector<std::future<FileResult>> &results);
-
     void run();
+
+    void run_sequentially();
 };
 
 
