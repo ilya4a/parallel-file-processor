@@ -2,11 +2,10 @@
 
 void ThreadPool::thread_task() {
     while (true) {
-
         std::function<void()> task;
         {
             std::unique_lock<std::mutex> lock(m);
-            worker_cv.wait(lock, [this](){return !tasks.empty() || stop;});
+            worker_cv.wait(lock, [this]() { return !tasks.empty() || stop; });
 
             if (stop && tasks.empty()) return;
 
@@ -17,7 +16,7 @@ void ThreadPool::thread_task() {
 
         try {
             task();
-        } catch (const std::exception& e) {
+        } catch (const std::exception &e) {
             std::string s = e.what();
             exceptions.emplace_back("task threw " + s);
         } catch (...) {
@@ -33,12 +32,10 @@ void ThreadPool::thread_task() {
         }
 
         queue_full_cv.notify_one();
-
     }
 }
 
-ThreadPool::ThreadPool(size_t num_threads, size_t max_queue_size ) {
-
+ThreadPool::ThreadPool(size_t num_threads, size_t max_queue_size) {
     if (num_threads == 0) {
         num_threads = std::thread::hardware_concurrency();
     }
@@ -65,8 +62,5 @@ ThreadPool::~ThreadPool() {
         queue_full_cv.notify_all();
     }
 
-    for (auto& t : threads) t.join();
+    for (auto &t: threads) t.join();
 }
-
-
-

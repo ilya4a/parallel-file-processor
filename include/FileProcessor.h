@@ -1,4 +1,3 @@
-
 #ifndef THREADPOOL_FILEPROCECCOR_H
 #define THREADPOOL_FILEPROCECCOR_H
 
@@ -17,7 +16,8 @@ struct FileResult {
 
     size_t processing_time_us = 0;
 
-    FileResult() : replace_result(0){}
+    FileResult() : replace_result(0) {
+    }
 };
 
 class FileProcessor {
@@ -25,17 +25,19 @@ class FileProcessor {
     fs::path file_path;
     std::string source;
 
-    std::string readFileToString(const std::filesystem::path& path);
+    std::string readFileToString(const std::filesystem::path &path);
+
     std::string create_temp_file();
 
     SearchResult search();
 
-    ReplaceResult replace(SearchResult const& search_result);
+    ReplaceResult replace(SearchResult const &search_result);
 
 public:
-    FileProcessor(fs::path path, Config conf) :config(std::move(conf)), file_path(std::move(path)){}
-    FileResult process_file();
+    FileProcessor(fs::path path, Config conf) : config(std::move(conf)), file_path(std::move(path)) {
+    }
 
+    FileResult process_file();
 };
 
 

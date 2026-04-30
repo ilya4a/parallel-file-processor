@@ -6,7 +6,7 @@
 #include "ReplaceOptions.h"
 #include "utils.h"
 
-std::string FileProcessor::readFileToString(const std::filesystem::path &path){
+std::string FileProcessor::readFileToString(const std::filesystem::path &path) {
     std::ifstream file(path, std::ios::binary);
 
     if (!file) {
@@ -35,8 +35,7 @@ std::string FileProcessor::create_temp_file() {
     return tmpl;
 }
 
-SearchResult FileProcessor::search()  {
-
+SearchResult FileProcessor::search() {
     source = readFileToString(file_path);
 
     SearchOptions options(config.query(), config.use_regex(), config.case_sensitive());
@@ -46,23 +45,20 @@ SearchResult FileProcessor::search()  {
     return search_result;
 }
 
-ReplaceResult FileProcessor::replace(SearchResult const& search_result) {
-
+ReplaceResult FileProcessor::replace(SearchResult const &search_result) {
     ReplaceResult replace_result{0};
     fs::path temp_file_name;
 
     try {
-
         temp_file_name = create_temp_file();
 
         ReplaceOptions replace_options = ReplaceOptions::Builder(source, search_result)
-        .set_replacement(config.replacement())
-        .set_tmp_file_path(temp_file_name)
-        .build();
+                .set_replacement(config.replacement())
+                .set_tmp_file_path(temp_file_name)
+                .build();
 
         replace_result = utils::replace(replace_options);
-
-    }catch (std::exception &e) {
+    } catch (std::exception &e) {
         replace_result.error_massage = "Replace error in file" + file_path.string() + " : " + e.what();
 
         if (!temp_file_name.empty() && fs::exists(temp_file_name)) {
@@ -85,7 +81,6 @@ FileResult FileProcessor::process_file() {
     auto start = std::chrono::steady_clock::now();
 
     try {
-
         SearchResult search_result = search();
 
         if (config.use_replacement()) {
@@ -94,8 +89,7 @@ FileResult FileProcessor::process_file() {
         }
 
         file_result.search_result = std::move(search_result);
-
-    }catch (std::exception &e) {
+    } catch (std::exception &e) {
         file_result.error_message = e.what();
     }
 

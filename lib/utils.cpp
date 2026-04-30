@@ -8,9 +8,8 @@
 #include "ReplaceOptions.h"
 
 namespace utils {
-
-    std::vector<fs::path> collectFilesRecursively(const fs::path& root,  const std::vector<std::string>& allowed_extensions) {
-
+    std::vector<fs::path> collectFilesRecursively(const fs::path &root,
+                                                  const std::vector<std::string> &allowed_extensions) {
         std::vector<fs::path> result;
 
         if (allowed_extensions.empty()) {
@@ -23,7 +22,7 @@ namespace utils {
 
         if (fs::is_regular_file(root)) {
             fs::path ext = root.extension();
-            for (const auto& allowed : allowed_extensions) {
+            for (const auto &allowed: allowed_extensions) {
                 if (ext == allowed) {
                     return {root};
                 }
@@ -35,12 +34,11 @@ namespace utils {
             throw std::runtime_error("Utils: path is not a directory or regular file");
         }
 
-        for (const auto& entry : fs::recursive_directory_iterator(root)) {
-
+        for (const auto &entry: fs::recursive_directory_iterator(root)) {
             fs::path ext = entry.path().extension();
 
             bool found = false;
-            for (const auto& allowed : allowed_extensions) {
+            for (const auto &allowed: allowed_extensions) {
                 if (ext == allowed) {
                     found = true;
                     break;
@@ -53,7 +51,7 @@ namespace utils {
     }
 
 
-    ReplaceResult replace(ReplaceOptions& options) {
+    ReplaceResult replace(ReplaceOptions &options) {
         std::ofstream out(options.tmp_file_path(), std::ios::binary | std::ios::trunc);
 
         if (!out) {
@@ -62,7 +60,7 @@ namespace utils {
 
         size_t last_pos = 0;
         for (const auto &i: options.search_result().matches) {
-            if (i.byte_pos < last_pos) {throw std::runtime_error("TextReplacer: write failed");}
+            if (i.byte_pos < last_pos) { throw std::runtime_error("TextReplacer: write failed"); }
             out.write(options.content().data() + last_pos, i.byte_pos - last_pos);
             out.write(options.replacement().data(), options.replacement_size());
             last_pos = i.byte_pos + i.length;
@@ -78,7 +76,7 @@ namespace utils {
     }
 
 
-    std::pair<size_t, size_t> find_line_and_column (std::vector<size_t> const& line_starts, size_t pos)  {
+    std::pair<size_t, size_t> find_line_and_column(std::vector<size_t> const &line_starts, size_t pos) {
         auto it = std::upper_bound(line_starts.begin(), line_starts.end(), pos);
         size_t line = std::distance(line_starts.begin(), it) - 1;
 
@@ -86,7 +84,7 @@ namespace utils {
         return {line, pos - line_start};
     };
 
-    SearchResult search(std::string_view content, const SearchOptions& options) {
+    SearchResult search(std::string_view content, const SearchOptions &options) {
         SearchResult result;
 
         const std::string_view pattern = options.find;
@@ -98,7 +96,6 @@ namespace utils {
         bool in_word = false;
 
         for (size_t i = 0; i < content.size(); ++i) {
-
             auto c = static_cast<unsigned char>(content[i]);
 
             if (std::isspace(c)) {
@@ -148,5 +145,4 @@ namespace utils {
         }
         return result;
     }
-
 }

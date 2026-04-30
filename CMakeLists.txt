@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     add_compile_options(-Wall -Wextra)
-endif()
+endif ()
 
 add_library(CLI11 INTERFACE)
 target_include_directories(CLI11 INTERFACE third_party/CLI11/include)
