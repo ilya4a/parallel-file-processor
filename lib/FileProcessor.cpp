@@ -6,7 +6,7 @@
 #include "ReplaceOptions.h"
 #include "utils.h"
 
-FileResult::FileResult()  : replace_result(0) {
+FileResult::FileResult() : replace_result(0) {
 }
 
 std::string FileProcessor::readFileToString(const std::filesystem::path &path) {
@@ -78,7 +78,7 @@ ReplaceResult FileProcessor::replace(SearchResult const &search_result) {
     return replace_result;
 }
 
-FileProcessor::FileProcessor(fs::path path, Config conf)  : config(std::move(conf)), file_path(std::move(path)) {
+FileProcessor::FileProcessor(fs::path path, Config conf) : config(std::move(conf)), file_path(std::move(path)) {
 }
 
 FileResult FileProcessor::process_file() {

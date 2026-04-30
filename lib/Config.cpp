@@ -1,5 +1,3 @@
-
-
 #include "Config.h"
 
 Config::Builder::Builder() {
@@ -28,7 +26,7 @@ Config::Builder::Builder() {
     detail_level_ = 1;
 }
 
-Config Config::Builder::build()  {
+Config Config::Builder::build() {
     if (root_paths_.empty() || query_.empty()) throw std::runtime_error("Config: invalid Builder call");
 
     if (is_build) throw std::runtime_error("Config: repeated call of build");
@@ -50,25 +48,25 @@ Config Config::Builder::build()  {
 }
 
 Config::Config(std::vector<fs::path> &&root_path,
-    std::vector<std::string> &&extensions,
-    std::string &&query,
-    std::string &&replacement,
-    bool use_regex,
-    bool case_sensitive,
-    bool use_replacement,
-    bool file_info,
-    bool sequential_,
-    size_t thread_count,
-    size_t detail_level)
-: root_paths_(std::move(root_path)),
-        extensions_(std::move(extensions)),
-        query_(std::move(query)),
-        replacement_(std::move(replacement)),
-        use_regex_(use_regex),
-        case_sensitive_(case_sensitive),
-        use_replacement_(use_replacement),
-        file_info_(file_info),
-        sequential_(sequential_),
-        thread_count_(thread_count),
-        detail_level_(detail_level) {
+               std::vector<std::string> &&extensions,
+               std::string &&query,
+               std::string &&replacement,
+               bool use_regex,
+               bool case_sensitive,
+               bool use_replacement,
+               bool file_info,
+               bool sequential_,
+               size_t thread_count,
+               size_t detail_level)
+    : root_paths_(std::move(root_path)),
+      extensions_(std::move(extensions)),
+      query_(std::move(query)),
+      replacement_(std::move(replacement)),
+      use_regex_(use_regex),
+      case_sensitive_(case_sensitive),
+      use_replacement_(use_replacement),
+      file_info_(file_info),
+      sequential_(sequential_),
+      thread_count_(thread_count),
+      detail_level_(detail_level) {
 }

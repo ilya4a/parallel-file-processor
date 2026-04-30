@@ -38,7 +38,6 @@ public:
 
 template<typename F, typename... Args>
 std::future<typename std::invoke_result_t<F, Args...> > ThreadPool::add_task(F &&f, Args &&... args) {
-
     auto p_task_ptr = std::make_shared<std::packaged_task<typename std::invoke_result_t<F, Args...> ()> >(
         std::bind(std::forward<F>(f), std::forward<Args>(args)...)
     );

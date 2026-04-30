@@ -91,8 +91,8 @@ namespace utils {
         if (pattern.empty()) return result;
 
         std::vector<size_t> line_starts = {0};
-
         size_t word_count = 0;
+
         bool in_word = false;
 
         for (size_t i = 0; i < content.size(); ++i) {
@@ -147,11 +147,11 @@ namespace utils {
     }
 }
 
-Match::Match(size_t line, size_t column_bytes, size_t byte_pos)  : line(line), column_bytes(column_bytes),
-                                                               byte_pos(byte_pos), length(0) {}
-
-SearchOptions::SearchOptions(std::string str, bool regex, bool sensitive)  : find(std::move(str)),
-                                                                 use_regex(regex),
-                                                                 case_sensitive(sensitive) {
+Match::Match(size_t line, size_t column_bytes, size_t byte_pos) : line(line), column_bytes(column_bytes),
+                                                                  byte_pos(byte_pos), length(0) {
 }
 
+SearchOptions::SearchOptions(std::string str, bool regex, bool sensitive) : find(std::move(str)),
+                                                                            use_regex(regex),
+                                                                            case_sensitive(sensitive) {
+}
