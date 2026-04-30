@@ -16,8 +16,7 @@ struct FileResult {
 
     size_t processing_time_us = 0;
 
-    FileResult() : replace_result(0) {
-    }
+    FileResult();
 };
 
 class FileProcessor {
@@ -34,8 +33,7 @@ class FileProcessor {
     ReplaceResult replace(SearchResult const &search_result);
 
 public:
-    FileProcessor(fs::path path, Config conf) : config(std::move(conf)), file_path(std::move(path)) {
-    }
+    FileProcessor(fs::path path, Config conf);
 
     FileResult process_file();
 };

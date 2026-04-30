@@ -38,15 +38,12 @@ public:
 
 template<typename F, typename... Args>
 std::future<typename std::invoke_result_t<F, Args...> > ThreadPool::add_task(F &&f, Args &&... args) {
+
     auto p_task_ptr = std::make_shared<std::packaged_task<typename std::invoke_result_t<F, Args...> ()> >(
         std::bind(std::forward<F>(f), std::forward<Args>(args)...)
     );
 
-
     std::unique_lock<std::mutex> lock(m);
-
-    bool is_out_of_queue = false;
-    if (tasks.size() >= max_queue_size) is_out_of_queue = true;
 
     queue_full_cv.wait(lock, [this]() { return tasks.size() < max_queue_size || stop; });
 

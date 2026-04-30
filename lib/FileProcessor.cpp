@@ -6,6 +6,9 @@
 #include "ReplaceOptions.h"
 #include "utils.h"
 
+FileResult::FileResult()  : replace_result(0) {
+}
+
 std::string FileProcessor::readFileToString(const std::filesystem::path &path) {
     std::ifstream file(path, std::ios::binary);
 
@@ -46,7 +49,7 @@ SearchResult FileProcessor::search() {
 }
 
 ReplaceResult FileProcessor::replace(SearchResult const &search_result) {
-    ReplaceResult replace_result{0};
+    ReplaceResult replace_result;
     fs::path temp_file_name;
 
     try {
@@ -73,6 +76,9 @@ ReplaceResult FileProcessor::replace(SearchResult const &search_result) {
 
     replace_result.bytes = config.replacement().size();
     return replace_result;
+}
+
+FileProcessor::FileProcessor(fs::path path, Config conf)  : config(std::move(conf)), file_path(std::move(path)) {
 }
 
 FileResult FileProcessor::process_file() {

@@ -192,13 +192,13 @@ void App::handle_results(std::vector<FileResult> &results) {
     }
 
     for (auto &file_result: results) {
+        
         if (!file_result.error_message.empty()) {
             std::cerr << "Error in file: " << file_result.file_path << ": " << file_result.error_message << std::endl;
             continue;
         }
 
-        if (conf.detail_level() == 1) {
-        } else if (conf.detail_level() == 2) {
+        if (conf.detail_level() == 2) {
             if (file_result.search_result.matches.size() > 0) {
                 std::cout << "[" << file_result.file_path << "]" << std::endl;
                 std::cout << "found: " << file_result.search_result.matches.size() << std::endl;

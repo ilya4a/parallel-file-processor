@@ -16,6 +16,8 @@ add_library(core_lib STATIC
         lib/App.cpp
         lib/FileProcessor.cpp
         lib/utils.cpp
+        lib/Config.cpp
+        lib/ReplaceOptions.cpp
 )
 target_include_directories(core_lib PUBLIC include)
 

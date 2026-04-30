@@ -139,10 +139,19 @@ namespace utils {
 
             result.matches.emplace_back(position.first, position.second, found_pos);
 
-            result.matches.back().length = options.find.size(); //regex fix
+            result.matches.back().length = options.find.size();
 
             search_pos = found_pos + pattern.size();
         }
         return result;
     }
 }
+
+Match::Match(size_t line, size_t column_bytes, size_t byte_pos)  : line(line), column_bytes(column_bytes),
+                                                               byte_pos(byte_pos), length(0) {}
+
+SearchOptions::SearchOptions(std::string str, bool regex, bool sensitive)  : find(std::move(str)),
+                                                                 use_regex(regex),
+                                                                 case_sensitive(sensitive) {
+}
+

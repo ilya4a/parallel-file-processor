@@ -1,5 +1,7 @@
 #include "ThreadPool.h"
 
+std::mutex excep_mut;
+
 void ThreadPool::thread_task() {
     while (true) {
         std::function<void()> task;
@@ -17,9 +19,11 @@ void ThreadPool::thread_task() {
         try {
             task();
         } catch (const std::exception &e) {
+            std::unique_lock<std::mutex> lock(excep_mut);
             std::string s = e.what();
             exceptions.emplace_back("task threw " + s);
         } catch (...) {
+            std::unique_lock<std::mutex> lock(excep_mut);
             exceptions.push_back("task threw unknown exception");
         }
 

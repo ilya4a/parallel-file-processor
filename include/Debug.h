@@ -1,7 +1,3 @@
-//
-// Created by ilya on 4/30/26.
-//
-
 #ifndef FREP_DEBUG_H
 #define FREP_DEBUG_H
 
