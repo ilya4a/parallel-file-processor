@@ -9,7 +9,7 @@ Config parse_cli(int argc, char *argv[]) {
     app.name("frep");
 
     app.footer(
-        "Examples:\n" "  frep -p /path/to/dir /another/file -q \"TODO\" -v               # find all occurrences, brief output\n" "  frep -p /path -q \"TODO\" -vv -i                               # verbose file‑level details + statistics (time, words)\n" "  frep -p /path -q \"TODO\" -r \"replace\"                       # search and replace, default brief output\n" "  frep -p /path -q \"TODO\" -r \"replace\" -vvv -i               # full output with underline for each match/replace + statistics"
+        "Examples:\n" "  frep -p /path/to/dir/ /another/file -q \"TODO\" -v               # find all occurrences, brief output\n" "  frep -p /path -q \"TODO\" -vv -i                               # verbose file‑level details + statistics (time, words)\n" "  frep -p /path -q \"TODO\" -r \"replace\"                       # search and replace, default brief output\n" "  frep -p /path -q \"TODO\" -r \"replace\" -vvv -i               # full output with underline for each match/replace + statistics"
     );
 
     std::vector<std::string> path_strings;
