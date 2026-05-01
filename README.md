@@ -21,14 +21,9 @@ The project uses CMake.
 ```bash
 git clone https://github.com/ilya4a/parallel-file-processor
 cd parallel-file-processor
+git submodule update --init --recursive
 cmake -S . -B build
 cmake --build build -j
-```
-
-If `CLI11` is included as a submodule in your repository, initialize submodules before configuring the project:
-
-```bash
-git submodule update --init --recursive
 ```
 
 ## Usage

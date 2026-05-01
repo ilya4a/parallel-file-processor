@@ -1,7 +1,6 @@
 #include "CLI/CLI.hpp"
-#include <iostream>
 
-#include "App.h" 4
+#include "App.h"
 #include "Config.h"
 #include "ThreadPool.h"
 
