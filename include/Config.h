@@ -1,9 +1,9 @@
 #ifndef THREADPOOL_CONFIG_H
 #define THREADPOOL_CONFIG_H
 
+#include <filesystem>
 #include <string>
 #include <vector>
-#include <filesystem>
 
 namespace fs = std::filesystem;
 
@@ -21,7 +21,7 @@ struct Config {
     size_t thread_count() const { return thread_count_; }
     size_t detail_level() const { return detail_level_; }
 
-private:
+  private:
     std::vector<fs::path> root_paths_;
     std::vector<std::string> extensions_;
     std::string query_;
@@ -34,7 +34,7 @@ private:
     size_t thread_count_;
     size_t detail_level_;
 
-public:
+  public:
     class Builder {
         std::vector<fs::path> root_paths_;
         std::vector<std::string> extensions_;
@@ -44,14 +44,14 @@ public:
         bool case_sensitive_;
         bool use_replacement_;
         bool file_info_;
-        bool sequential_{};
+        bool sequential_ {};
 
         size_t thread_count_;
         size_t detail_level_;
 
         bool is_build;
 
-    public:
+      public:
         Builder();
 
         Builder &set_sequential(bool sequential) {
@@ -75,7 +75,7 @@ public:
         }
 
         Builder &set_root_path(std::vector<std::string> &&dirs) {
-            for (auto &i: dirs) {
+            for (auto &i : dirs) {
                 root_paths_.emplace_back(std::move(i));
             }
             return *this;
@@ -110,7 +110,7 @@ public:
         Config build();
     };
 
-private:
+  private:
     Config(
         std::vector<fs::path> &&root_path,
         std::vector<std::string> &&extensions,
@@ -126,4 +126,4 @@ private:
     );
 };
 
-#endif //THREADPOOL_CONFIG_H
+#endif // THREADPOOL_CONFIG_H

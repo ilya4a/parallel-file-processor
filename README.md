@@ -11,7 +11,6 @@ The executable is called `frep`.
 * Optional text replacement
 * Multiple output detail levels
 * Per-file statistics such as word count, line count, byte size, and processing time
-* Case-sensitive or case-insensitive search
 * Optional file extension filtering
 * Linux-only
 
@@ -64,13 +63,13 @@ Shows only the total number of matches across all processed files.
 Example:
 
 ```bash
-frep -p ../src/ -p ../lib/ -p ../include/ -q "throw " -v
+frep -p ../lib/  -q "std::cout" # default -v
 ```
 
 Output:
 
 ```text
-MATCHES TOTAL: 17
+MATCHES TOTAL: 16
 ```
 
 ### `-vv`
@@ -80,18 +79,19 @@ Shows per-file match counts.
 Example:
 
 ```bash
-frep -p ../src/ -p ../lib/ -p ../include/ -q "throw " -vv
+frep -p ../lib/  -q "std::cout" -vv
 ```
 
 Example output:
 
 ```text
-[../lib/utils.cpp]
-found: 6
-============================================================
-[../lib/FileProcessor.cpp]
-found: 3
-...
+[../lib/App.cpp]
+found: 15
+========================================================================================================
+[../lib/example.txt]
+found: 1
+========================================================================================================
+MATCHES TOTAL: 16
 ```
 
 ### `-vvv`
@@ -101,19 +101,31 @@ Shows full per-file output with matching lines and highlighted matches.
 Example:
 
 ```bash
-frep -p ../src/ -p ../lib/ -p ../include/ -q "throw " -vvv
+frep -p ../lib/  -q "std::cout" -vvv
 ```
 
 Example output:
 
 ```text
-[../lib/utils.cpp]
-found: 6
-17:             throw std::runtime_error("Utils: allowed_extensions is empty");
-                ^^^^^
-21:             throw std::runtime_error("Utils: path does not exist");
-                ^^^^^
+[../lib/App.cpp]
+found: 15
+80:     std::cout << prefix << new_line << '\n';
+        ^^^^^^^^^                               
+96:     std::cout << underline << '\n';
+        ^^^^^^^^^                      
+
 ...
+
+357:         std::cout << "TOTAL TIME: " << processing_time_us << " microseconds" << std::endl;
+             ^^^^^^^^^                                                                         
+========================================================================================================
+[../lib/example.txt]
+found: 1
+1: std::cout << "example of another file"
+   ^^^^^^^^^                             
+========================================================================================================
+MATCHES TOTAL: 16
+
 ```
 
 Matches are underlined with `^` characters in the detailed view.
@@ -125,17 +137,41 @@ When `-i` is enabled, the tool prints overall or per-file statistics depending o
 ### With `-v -i`
 
 ```text
-MATCHES TOTAL: 17
-WORDS TOTAL: 3051 | BYTES TOTAL: 36078 | LINES TOTAL: 1231
-TOTAL TIME: 1240 microseconds
+MATCHES TOTAL: 16
+WORDS TOTAL: 2219 | BYTES TOTAL: 26059 | LINES TOTAL: 835
+TOTAL TIME: 1711 microseconds
 ```
 
 ### With `-vv -i`
 
 ```text
-[../lib/utils.cpp]
-found: 6
-total_words: 397 | total_lines: 153 | time: 95 microseconds | total_size: 4876
+[../lib/App.cpp]
+found: 15
+total_words: 1115 | total_lines: 360 | time: 212 microseconds | total_size: 12079
+========================================================================================================
+[../lib/example.txt]
+found: 1
+total_words:    6 | total_lines:   1 | time:  18 microseconds | total_size:    38
+========================================================================================================
+MATCHES TOTAL: 16
+WORDS TOTAL: 2219 | BYTES TOTAL: 26059 | LINES TOTAL: 835
+TOTAL TIME: 1020 microseconds
+```
+### With `-vvv -i`
+```text
+...
+
+[../lib/example.txt]
+found: 1
+1: std::cout << "example of another file"
+   ^^^^^^^^^                             
+--------------------------------------------------------------------------------------------------------
+total_words: 6 | total_lines: 1 | time: 41 microseconds | total_size: 38
+========================================================================================================
+MATCHES TOTAL: 16
+WORDS TOTAL: 2219 | BYTES TOTAL: 26059 | LINES TOTAL: 835
+TOTAL TIME: 1140 microseconds
+
 ```
 
 ## Examples
@@ -143,57 +179,24 @@ total_words: 397 | total_lines: 153 | time: 95 microseconds | total_size: 4876
 Search only:
 
 ```bash
-frep -p ../src/ -p ../lib/ -p ../include/ -q "throw "
+frep -p /path/to/dir/ -p /path/to/file -q "query"
 ```
 
-Search with file filtering:
+Search with file filtering and case-sensitive:
 
 ```bash
-frep -p ../src/ -p ../lib/ -p ../include/ -q "throw " -vv -i -e ".cpp .h"
-```
-
-Case-sensitive search:
-
-```bash
-frep -p ./src -q "TODO" -s -vv
+frep -p /path/ -q "query" -e ".cpp .h" -s
 ```
 
 Search and replace:
 
 ```bash
-frep -p ./src -q "old_text" -r "new_text" -vv
+frep -p /path/ -q "old_text" -r "new_text" -vv -i
 ```
 
 Single-threaded execution:
 
 ```bash
-frep -p ./src -q "throw " -S -vvv
-```
-
-## Notes
-
-* Directories are processed recursively.
-* The project targets Linux.
-* `CLI11` is planned as a git submodule dependency.
-
-## Project structure
-
-```text
-parallel-file-processor/
-├── include/
-│   ├── App.h
-│   ├── Config.h
-│   ├── Debug.h
-│   ├── FileProcessor.h
-│   ├── ReplaceOptions.h
-│   ├── ThreadPool.h
-│   └── utils.h
-├── lib/
-│   ├── App.cpp
-│   ├── FileProcessor.cpp
-│   ├── ThreadPool.cpp
-│   └── utils.cpp
-└── src/
-    └── main.cpp
+frep -p /path/ -q "query " -S -i
 ```
 

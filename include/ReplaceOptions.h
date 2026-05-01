@@ -1,8 +1,8 @@
 #ifndef THREADPOOL_REPLACEOPTIONS_H
 #define THREADPOOL_REPLACEOPTIONS_H
 
-#include <filesystem>
 #include "utils.h"
+#include <filesystem>
 
 namespace fs = std::filesystem;
 
@@ -17,13 +17,13 @@ struct ReplaceOptions {
         std::string replacement_;
         fs::path tmp_file_path_;
         std::string_view content_;
-        SearchResult const &search_result_;
+        const SearchResult &search_result_;
         size_t replacement_size_;
 
         bool is_build;
 
-    public:
-        Builder(std::string_view content, SearchResult const &search_result);
+      public:
+        Builder(std::string_view content, const SearchResult &search_result);
 
         Builder &set_replacement(std::string replacement);
 
@@ -32,19 +32,20 @@ struct ReplaceOptions {
         ReplaceOptions build();
     };
 
-private:
+  private:
     std::string replacement_;
     fs::path tmp_file_path_;
     std::string_view content_;
-    SearchResult const &search_result_;
+    const SearchResult &search_result_;
     size_t replacement_size_;
 
-    ReplaceOptions(std::string &&replacement,
-                   fs::path &&tmp_file_path,
-                   std::string_view content,
-                   SearchResult const &search_result,
-                   size_t replacement_size);
+    ReplaceOptions(
+        std::string &&replacement,
+        fs::path &&tmp_file_path,
+        std::string_view content,
+        const SearchResult &search_result,
+        size_t replacement_size
+    );
 };
 
-
-#endif //THREADPOOL_REPLACEOPTIONS_H
+#endif // THREADPOOL_REPLACEOPTIONS_H

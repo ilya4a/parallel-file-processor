@@ -6,8 +6,7 @@
 #include "ReplaceOptions.h"
 #include "utils.h"
 
-FileResult::FileResult() : replace_result(0) {
-}
+FileResult::FileResult() : replace_result(0) { }
 
 std::string FileProcessor::readFileToString(const std::filesystem::path &path) {
     std::ifstream file(path, std::ios::binary);
@@ -48,7 +47,7 @@ SearchResult FileProcessor::search() {
     return search_result;
 }
 
-ReplaceResult FileProcessor::replace(SearchResult const &search_result) {
+ReplaceResult FileProcessor::replace(const SearchResult &search_result) {
     ReplaceResult replace_result;
     fs::path temp_file_name;
 
@@ -56,9 +55,9 @@ ReplaceResult FileProcessor::replace(SearchResult const &search_result) {
         temp_file_name = create_temp_file();
 
         ReplaceOptions replace_options = ReplaceOptions::Builder(source, search_result)
-                .set_replacement(config.replacement())
-                .set_tmp_file_path(temp_file_name)
-                .build();
+                                             .set_replacement(config.replacement())
+                                             .set_tmp_file_path(temp_file_name)
+                                             .build();
 
         replace_result = utils::replace(replace_options);
     } catch (std::exception &e) {
@@ -78,8 +77,7 @@ ReplaceResult FileProcessor::replace(SearchResult const &search_result) {
     return replace_result;
 }
 
-FileProcessor::FileProcessor(fs::path path, Config conf) : config(std::move(conf)), file_path(std::move(path)) {
-}
+FileProcessor::FileProcessor(fs::path path, Config conf) : config(std::move(conf)), file_path(std::move(path)) { }
 
 FileResult FileProcessor::process_file() {
     FileResult file_result;

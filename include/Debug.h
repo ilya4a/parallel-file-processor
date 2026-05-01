@@ -8,4 +8,4 @@
 #define DEBUG_LOG(msg) do {} while (false)
 #endif
 
-#endif //FREP_DEBUG_H
+#endif // FREP_DEBUG_H

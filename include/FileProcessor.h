@@ -29,13 +29,12 @@ class FileProcessor {
 
     SearchResult search();
 
-    ReplaceResult replace(SearchResult const &search_result);
+    ReplaceResult replace(const SearchResult &search_result);
 
-public:
+  public:
     FileProcessor(fs::path path, Config conf);
 
     FileResult process_file();
 };
 
-
-#endif //THREADPOOL_FILEPROCECCOR_H
+#endif // THREADPOOL_FILEPROCECCOR_H

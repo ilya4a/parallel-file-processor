@@ -39,16 +39,17 @@ struct ReplaceResult {
     std::string error_massage;
 };
 
-
 namespace utils {
-    std::vector<fs::path> collectFilesRecursively(const fs::path &root,
-                                                  const std::vector<std::string> &allowed_extensions);
+    std::vector<fs::path> collectFilesRecursively(
+        const fs::path &root,
+        const std::vector<std::string> &allowed_extensions
+    );
 
     ReplaceResult replace(ReplaceOptions &options);
 
-    std::pair<size_t, size_t> find_line_and_column(std::vector<size_t> const &line_starts, size_t pos);
+    std::pair<size_t, size_t> find_line_and_column(const std::vector<size_t> &line_starts, size_t pos);
 
     SearchResult search(std::string_view content, const SearchOptions &options);
-}
+} // namespace utils
 
-#endif //THREADPOOL_UTILS_H
+#endif // THREADPOOL_UTILS_H

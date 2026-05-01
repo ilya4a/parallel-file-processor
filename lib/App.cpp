@@ -1,15 +1,14 @@
 #include "App.h"
 
 #include <iostream>
-#include <unistd.h>
 #include <sys/ioctl.h>
+#include <unistd.h>
 
 #include "Debug.h"
 #include "ThreadPool.h"
 #include "utils.h"
 
-App::App(Config config) : conf(config) {
-}
+App::App(Config config) : conf(config) { }
 
 size_t get_terminal_width() {
     winsize w;
@@ -18,11 +17,13 @@ size_t get_terminal_width() {
             return w.ws_col;
         }
     }
-    return 80;
+    return App::default_terminal_width;
 }
 
-size_t calc_num_tub(std::string const &str, size_t start, size_t stop) {
-    if (start >= str.size()) return 0;
+size_t calc_num_tub(const std::string &str, size_t start, size_t stop) {
+    if (start >= str.size()) {
+        return 0;
+    }
     size_t res = 0;
     for (size_t i = start; i <= std::min(stop, str.size() - 1); i++) {
         if (str[i] == '\t') {
@@ -32,13 +33,14 @@ size_t calc_num_tub(std::string const &str, size_t start, size_t stop) {
     return res;
 }
 
-
-void calc_tab_caret_column(const std::string &line,
-                           std::string &new_line,
-                           const std::vector<size_t> &starts,
-                           std::vector<size_t> &new_starts,
-                           size_t length) {
-    for (char c: line) {
+void calc_tab_caret_column(
+    const std::string &line,
+    std::string &new_line,
+    const std::vector<size_t> &starts,
+    std::vector<size_t> &new_starts,
+    size_t length
+) {
+    for (char c : line) {
         if (c == '\t') {
             new_line.append(App::default_tab_width, ' ');
         } else {
@@ -48,18 +50,26 @@ void calc_tab_caret_column(const std::string &line,
 
     size_t last_pos = 0;
 
-    for (int i = 0; i < starts.size(); i++) new_starts[i] = starts[i];
+    for (int i = 0; i < starts.size(); i++) {
+        new_starts[i] = starts[i];
+    }
 
     for (size_t i = 0; i < starts.size(); i++) {
         size_t shift = calc_num_tub(line, last_pos, starts[i]);
 
-        for (size_t j = i; j < starts.size(); j++) new_starts[j] += shift * (App::default_tab_width - 1);
+        for (size_t j = i; j < starts.size(); j++) {
+            new_starts[j] += shift * (App::default_tab_width - 1);
+        }
         last_pos = starts[i] + length;
     }
 }
 
-void print_line_with_caret_under_line(const std::string &line, size_t line_num, std::vector<size_t> const &starts,
-                                      size_t length) {
+void print_line_with_caret_under_line(
+    const std::string &line,
+    size_t line_num,
+    const std::vector<size_t> &starts,
+    size_t length
+) {
     std::string new_line;
     std::vector<size_t> new_starts(starts.size(), 0);
     new_line.reserve(calc_num_tub(line, 0, line.size() - 1) * 3 + line.size());
@@ -72,10 +82,11 @@ void print_line_with_caret_under_line(const std::string &line, size_t line_num, 
     std::string underline(prefix.size() + new_line.size(), ' ');
 
     DEBUG_LOG(
-        "print_line_with_caret_under_line: line.size=" << line.size() << " starts.size=" << starts.size() << " length="
-        << length << '\n');
+        "print_line_with_caret_under_line: line.size=" << line.size() << " starts.size=" << starts.size()
+                                                       << " length=" << length << '\n'
+    );
 
-    for (size_t start: new_starts) {
+    for (size_t start : new_starts) {
         size_t underline_start = prefix.size() + start;
         size_t underline_end = std::min(underline_start + length, underline.size());
         for (size_t i = underline_start; i < underline_end; ++i) {
@@ -86,13 +97,15 @@ void print_line_with_caret_under_line(const std::string &line, size_t line_num, 
 }
 
 void print_line_from_file(const fs::path &filePath, std::vector<Match> &matches, size_t match_len = 0) {
-    if (match_len == 0) match_len = matches[0].length;
+    if (match_len == 0) {
+        match_len = matches[0].length;
+    }
 
-    DEBUG_LOG("print_line_from_file: line=" << matches[0].line
-        << " byte_pos=" << matches[0].byte_pos
-        << " column_bytes=" << matches[0].column_bytes
-        << " match_len=" << match_len
-        << " match.lenght=" << matches[0].length);
+    DEBUG_LOG(
+        "print_line_from_file: line=" << matches[0].line << " byte_pos=" << matches[0].byte_pos
+                                      << " column_bytes=" << matches[0].column_bytes << " match_len=" << match_len
+                                      << " match.lenght=" << matches[0].length
+    );
 
     if (!std::filesystem::exists(filePath)) {
         throw std::runtime_error("App: file does not exist: " + filePath.string());
@@ -108,7 +121,9 @@ void print_line_from_file(const fs::path &filePath, std::vector<Match> &matches,
     while (std::getline(file, line)) {
         if (currentLine == matches[0].line) {
             std::vector<size_t> starts(matches.size());
-            for (size_t i = 0; i < matches.size(); i++) starts[i] = matches[i].column_bytes;
+            for (size_t i = 0; i < matches.size(); i++) {
+                starts[i] = matches[i].column_bytes;
+            }
             print_line_with_caret_under_line(line, matches[0].line, starts, match_len);
             return;
         }
@@ -117,23 +132,33 @@ void print_line_from_file(const fs::path &filePath, std::vector<Match> &matches,
     file.close();
 }
 
-void print_info(FileResult &file_result, size_t max_w_time = 0, size_t max_w_words = 0, size_t max_w_size = 0,
-                size_t max_w_lines = 0) {
-    if (max_w_time == 0) max_w_time = std::to_string(file_result.processing_time_us).size();
-    if (max_w_words == 0) max_w_words = std::to_string(file_result.search_result.total_words).size();
-    if (max_w_size == 0) max_w_words = std::to_string(file_result.search_result.total_bytes).size();
-    if (max_w_lines == 0) max_w_words = std::to_string(file_result.search_result.lines).size();
-
+void print_info(
+    FileResult &file_result,
+    size_t max_w_time = 0,
+    size_t max_w_words = 0,
+    size_t max_w_size = 0,
+    size_t max_w_lines = 0
+) {
+    if (max_w_time == 0) {
+        max_w_time = std::to_string(file_result.processing_time_us).size();
+    }
+    if (max_w_words == 0) {
+        max_w_words = std::to_string(file_result.search_result.total_words).size();
+    }
+    if (max_w_size == 0) {
+        max_w_words = std::to_string(file_result.search_result.total_bytes).size();
+    }
+    if (max_w_lines == 0) {
+        max_w_words = std::to_string(file_result.search_result.lines).size();
+    }
 
     std::cout << "total_words: " << std::setw(max_w_words) << file_result.search_result.total_words
-            << " | total_lines: " << std::setw(max_w_lines) << file_result.search_result.lines
-            << " | time: " << std::setw(max_w_time) << file_result.processing_time_us << " microseconds"
-            << " | total_size: " << std::setw(max_w_size) << file_result.search_result.total_bytes
-            << '\n';
+              << " | total_lines: " << std::setw(max_w_lines) << file_result.search_result.lines
+              << " | time: " << std::setw(max_w_time) << file_result.processing_time_us << " microseconds"
+              << " | total_size: " << std::setw(max_w_size) << file_result.search_result.total_bytes << '\n';
 }
 
-
-std::vector<Match> App::get_match_lines(size_t i, FileResult const &file_result) {
+std::vector<Match> App::get_match_lines(size_t i, const FileResult &file_result) {
     size_t matches_count = file_result.search_result.matches.size();
     std::vector<Match> matches_in_line;
 
@@ -144,13 +169,15 @@ std::vector<Match> App::get_match_lines(size_t i, FileResult const &file_result)
             matches_in_line.push_back(file_result.search_result.matches[i + 1]);
 
             if (file_result.replace_result.num_replacements > 0) {
-                matches_in_line.back().column_bytes += (
-                    file_result.replace_result.bytes - file_result.search_result.matches[0].length) * j;
+                matches_in_line.back().column_bytes +=
+                    (file_result.replace_result.bytes - file_result.search_result.matches[0].length) * j;
             }
 
             i++;
             j++;
-            if (i + 1 >= matches_count) break;
+            if (i + 1 >= matches_count) {
+                break;
+            }
         }
     } else {
         matches_in_line.push_back(file_result.search_result.matches[i]);
@@ -169,12 +196,13 @@ void App::print_detail_level3(FileResult &file_result) {
             std::vector<Match> matches_in_line = get_match_lines(i, file_result);
 
             if (file_result.replace_result.num_replacements > 0) {
-                size_t new_size = conf.replacement().size() + calc_num_tub(
-                                      conf.replacement(), 0, conf.replacement().size()) * (App::default_tab_width - 1);
+                size_t new_size =
+                    conf.replacement().size()
+                    + calc_num_tub(conf.replacement(), 0, conf.replacement().size()) * (App::default_tab_width - 1);
                 print_line_from_file(file_result.file_path, matches_in_line, new_size);
             } else {
-                size_t new_size = conf.query().size() + calc_num_tub(conf.query(), 0, conf.query().size()) * (
-                                      App::default_tab_width - 1);
+                size_t new_size = conf.query().size()
+                                  + calc_num_tub(conf.query(), 0, conf.query().size()) * (App::default_tab_width - 1);
                 print_line_from_file(file_result.file_path, matches_in_line, new_size);
             }
         }
@@ -190,7 +218,6 @@ void App::print_detail_level3(FileResult &file_result) {
     }
 }
 
-
 void App::handle_results(std::vector<FileResult> &results) {
     size_t matches_total = 0;
     size_t words_total = 0;
@@ -199,16 +226,20 @@ void App::handle_results(std::vector<FileResult> &results) {
 
     size_t max_w_time = 0, max_w_words = 0, max_w_size = 0, max_w_lines = 0;
 
-    for (auto &fr: results) {
-        if (!conf.file_info()) break;
-        if (!fr.error_message.empty()) continue;
+    for (auto &fr : results) {
+        if (!conf.file_info()) {
+            break;
+        }
+        if (!fr.error_message.empty()) {
+            continue;
+        }
         max_w_time = std::max(max_w_time, std::to_string(fr.processing_time_us).size());
         max_w_words = std::max(max_w_words, std::to_string(fr.search_result.total_words).size());
         max_w_size = std::max(max_w_size, std::to_string(fr.search_result.total_bytes).size());
         max_w_lines = std::max(max_w_lines, std::to_string(fr.search_result.lines).size());
     }
 
-    for (auto &file_result: results) {
+    for (auto &file_result : results) {
         if (!file_result.error_message.empty()) {
             std::cerr << "Error in file: " << file_result.file_path << ": " << file_result.error_message << std::endl;
             continue;
@@ -228,8 +259,9 @@ void App::handle_results(std::vector<FileResult> &results) {
             print_detail_level3(file_result);
         }
 
+        matches_total += file_result.search_result.matches.size();
+
         if (conf.file_info()) {
-            matches_total += file_result.search_result.matches.size();
             words_total += file_result.search_result.total_words;
             bytes_total += file_result.search_result.total_bytes;
             lines_total += file_result.search_result.lines;
@@ -243,16 +275,15 @@ void App::handle_results(std::vector<FileResult> &results) {
     }
 
     if (conf.file_info()) {
-        std::cout << "WORDS TOTAL: " << words_total
-                << " | BYTES TOTAL: " << bytes_total
-                << " | LINES TOTAL: " << lines_total << std::endl;
+        std::cout << "WORDS TOTAL: " << words_total << " | BYTES TOTAL: " << bytes_total
+                  << " | LINES TOTAL: " << lines_total << std::endl;
     }
 }
 
-void App::handle_future_results(std::vector<std::future<FileResult> > &future_results) {
+void App::handle_future_results(std::vector<std::future<FileResult>> &future_results) {
     std::vector<FileResult> results(future_results.size());
     int i = 0;
-    for (auto &fr: future_results) {
+    for (auto &fr : future_results) {
         results[i] = fr.get();
         i++;
     }
@@ -262,11 +293,11 @@ void App::handle_future_results(std::vector<std::future<FileResult> > &future_re
 void App::run() {
     auto start = std::chrono::steady_clock::now();
 
-    ThreadPool thread_pool{conf.thread_count()};
+    ThreadPool thread_pool { conf.thread_count() };
 
-    std::vector<std::future<FileResult> > future_results;
+    std::vector<std::future<FileResult>> future_results;
 
-    for (auto &i: conf.root_paths()) {
+    for (auto &i : conf.root_paths()) {
         std::vector<fs::path> files;
         try {
             files = utils::collectFilesRecursively(i, conf.extensions());
@@ -275,7 +306,7 @@ void App::run() {
             continue;
         }
 
-        for (auto const &path: files) {
+        for (const auto &path : files) {
             FileProcessor file_processor(path, conf);
 
             future_results.push_back(thread_pool.add_task([this, path]() -> FileResult {
@@ -297,13 +328,12 @@ void App::run() {
     }
 }
 
-
 void App::run_sequentially() {
     auto start = std::chrono::steady_clock::now();
 
     std::vector<FileResult> results;
 
-    for (auto &i: conf.root_paths()) {
+    for (auto &i : conf.root_paths()) {
         std::vector<fs::path> files;
         try {
             files = utils::collectFilesRecursively(i, conf.extensions());
@@ -312,7 +342,7 @@ void App::run_sequentially() {
             continue;
         }
 
-        for (auto const &path: files) {
+        for (const auto &path : files) {
             FileProcessor file_processor(path, conf);
             results.push_back(file_processor.process_file());
         }
